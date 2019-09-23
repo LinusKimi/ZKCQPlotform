@@ -46,7 +46,7 @@
                                         </Style>
                                     </ToggleButton.Style>
                                 </ToggleButton>
-                                <Label x:Name="bytenum" Content="每帧长度" Grid.Row="2" Grid.Column="0" Margin="5,12" FontSize="16" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
+                                <Label x:Name="bytenum" Content="每帧字节" Grid.Row="2" Grid.Column="0" Margin="5,12" FontSize="16" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
                                 <TextBox x:Name="bytecnt" Grid.Row="2" Grid.Column="1" Margin="10,16" FontSize="16" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
                                 <Label x:Name="framenum" Content="采集帧数" Grid.Row="3" Grid.Column="0" Margin="5,12" FontSize="16" VerticalAlignment="Center" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
                                 <TextBox x:Name="framecnt" Grid.Row="3" Grid.Column="1" Margin="10,16" FontSize="16" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
@@ -137,7 +137,7 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Label Content="每包长度" Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="16"/>
+                            <Label Content="每包字节" Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="16"/>
                             <TextBox x:Name="netlen" Grid.Row="0" Grid.Column="1" Margin="5" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Text="0" FontSize="16"/>
                             <Button x:Name="netsavedata" Grid.Row="1" Grid.ColumnSpan="2" Margin="5" Content="保存数据" Click="Netsavedata_Click"/>
                             <Button x:Name="netchangepath" Content="更改保存路径" Grid.Row="2" Grid.ColumnSpan="2" Margin="5" Click="Netchangepath_Click"/>

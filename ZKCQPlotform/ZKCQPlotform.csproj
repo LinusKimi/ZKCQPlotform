@@ -106,6 +106,10 @@
     <Resource Include="desktop.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PlotformMSG\PlotformMSG.csproj">
+      <Project>{c08675f9-31ee-40b8-9798-8ab09af0a6d4}</Project>
+      <Name>PlotformMSG</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PlotformUSB\PlotformUSB.csproj">
       <Project>{ee3002b4-78ed-4084-b937-e7932e44fcde}</Project>
       <Name>PlotformUSB</Name>
