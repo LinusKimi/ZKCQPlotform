@@ -8,5 +8,8 @@
     <Setting Name="usbframecnt" Type="System.String" Scope="User">
       <Value Profile="(Default)">200</Value>
     </Setting>
+    <Setting Name="usbstartcom" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

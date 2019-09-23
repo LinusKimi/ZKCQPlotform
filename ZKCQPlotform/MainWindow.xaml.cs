@@ -12,6 +12,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LibUsbDotNet;
+using LibUsbDotNet.Main;
+
+using PlotformUSB;
 
 namespace ZKCQPlotform
 {
@@ -64,6 +68,11 @@ namespace ZKCQPlotform
 
         }
 
+        private void Usbsetting_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         private void Netconnect_Click(object sender, RoutedEventArgs e)
         {
 
@@ -78,5 +87,7 @@ namespace ZKCQPlotform
         {
 
         }
+
+
     }
 }

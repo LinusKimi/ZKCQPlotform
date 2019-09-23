@@ -67,7 +67,23 @@
                         <ListBox x:Name="usbmsgbox" Margin="0,0,-2,-1"/>
                     </GroupBox>
                     <GroupBox x:Name="groupBox3" Grid.Column="1" Header="设备列表" Margin="5,0,0,0" Grid.Row="1" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin">
-                        <ListBox x:Name="usbdevlist" Margin="0,0,-2,-1"/>
+                        <Grid Margin="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="64*"/>
+                                <RowDefinition Height="45*"/>
+                            </Grid.RowDefinitions>
+                            <ListBox x:Name="usbdevlist" Grid.Row="0" Margin="0,0,-2,-1"/>
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Label Content="开始采集指令" FontSize="16" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                                <TextBox x:Name="uabsendcom" Grid.Column="1" Text="eb 90 00 00 01" Margin="5" VerticalContentAlignment="Center"/>
+                                <Button x:Name="usbsetting" Grid.Column="2" Margin="5" Content="保存协议设置" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Click="Usbsetting_Click"/>
+                            </Grid>
+                        </Grid>
                     </GroupBox>
                 </Grid>
             </TabItem>
@@ -131,7 +147,23 @@
                         <ListBox x:Name="netmsgbox" Margin="0,0,-2,-1"/>
                     </GroupBox>
                     <GroupBox x:Name="groupBox7" Grid.Column="1" Header="设备列表" Grid.Row="1" Margin="5,0,0,0">
-                        <ListBox x:Name="netdevlist" Margin="0,0,-2,-1"/>
+                        <Grid Margin="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="64*"/>
+                                <RowDefinition Height="45*"/>
+                            </Grid.RowDefinitions>
+                            <ListBox x:Name="netdevlist" Grid.Row="0" Margin="0,0,-2,-1"/>
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Label Content="开始采集指令" FontSize="16" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                                <TextBox x:Name="netsendcom" Text="eb 90 00 00 01" Grid.Column="1" Margin="5" VerticalContentAlignment="Center"/>
+                                <Button x:Name="netsetting" Content="保存协议设置" Grid.Column="2" Margin="5"/>
+                            </Grid>
+                        </Grid>
                     </GroupBox>
                 </Grid>
             </TabItem>
@@ -147,12 +179,24 @@
                     </Grid.ColumnDefinitions>
                     <GroupBox x:Name="groupbox8" Header="设备" Grid.Column="0" Grid.Row="0" Margin="0,0,0,0">
                         <Grid Margin="0">
-                            
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="13*"/>
+                                <ColumnDefinition Width="18*"/>
+                            </Grid.ColumnDefinitions>
+
                         </Grid>
                     </GroupBox>
                     <GroupBox Header="功能" Grid.Row="1" Margin="0,0,0,0">
                         <Grid Margin="0">
-                            
+
                         </Grid>
                     </GroupBox>
                     <GroupBox Header="消息通知" Grid.Column="1" Margin="5,0,0,0">

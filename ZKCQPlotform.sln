@@ -5,6 +5,12 @@ VisualStudioVersion = 15.0.28307.852
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZKCQPlotform", "ZKCQPlotform\ZKCQPlotform.csproj", "{8DDEF138-2367-4CF0-A83C-48F600A38464}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Servers", "Servers", "{25EB62C5-AD8A-4691-8183-AD4E547814F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlotformUSB", "PlotformUSB\PlotformUSB.csproj", "{EE3002B4-78ED-4084-B937-E7932E44FCDE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlotformMSG", "PlotformMSG\PlotformMSG.csproj", "{C08675F9-31EE-40B8-9798-8AB09AF0A6D4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,9 +21,21 @@ Global
 		{8DDEF138-2367-4CF0-A83C-48F600A38464}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DDEF138-2367-4CF0-A83C-48F600A38464}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DDEF138-2367-4CF0-A83C-48F600A38464}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE3002B4-78ED-4084-B937-E7932E44FCDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE3002B4-78ED-4084-B937-E7932E44FCDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE3002B4-78ED-4084-B937-E7932E44FCDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE3002B4-78ED-4084-B937-E7932E44FCDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C08675F9-31EE-40B8-9798-8AB09AF0A6D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C08675F9-31EE-40B8-9798-8AB09AF0A6D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C08675F9-31EE-40B8-9798-8AB09AF0A6D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C08675F9-31EE-40B8-9798-8AB09AF0A6D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EE3002B4-78ED-4084-B937-E7932E44FCDE} = {25EB62C5-AD8A-4691-8183-AD4E547814F2}
+		{C08675F9-31EE-40B8-9798-8AB09AF0A6D4} = {25EB62C5-AD8A-4691-8183-AD4E547814F2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {489A32A1-5D42-443E-8AAB-C40873B14AC9}

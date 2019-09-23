@@ -38,8 +38,12 @@
     <ApplicationIcon>desktop.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="LibUsbDotNet.LibUsbDotNet, Version=2.2.0.0, Culture=neutral, PublicKeyToken=c677239abe1e02a9, processorArchitecture=MSIL">
+      <HintPath>..\packages\LibUsbDotNet.2.2.29\lib\net45\LibUsbDotNet.LibUsbDotNet.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -89,6 +93,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -99,6 +104,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="desktop.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PlotformUSB\PlotformUSB.csproj">
+      <Project>{ee3002b4-78ed-4084-b937-e7932e44fcde}</Project>
+      <Name>PlotformUSB</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
