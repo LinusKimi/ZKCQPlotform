@@ -78,10 +78,16 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <Label Content="开始采集指令" FontSize="16" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-                                <TextBox x:Name="uabsendcom" Grid.Column="1" Text="eb 90 00 00 01" Margin="5" VerticalContentAlignment="Center"/>
-                                <Button x:Name="usbsetting" Grid.Column="2" Margin="5" Content="保存协议设置" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Click="Usbsetting_Click"/>
+                                
+                                <TextBox x:Name="uabstartcom" Grid.Column="1" Text="eb 90 00 00 01" Margin="5" VerticalContentAlignment="Center"/>
+                                <Label Content="结束采集指令" Grid.Column="2" FontSize="16" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                                <TextBox x:Name="uabstopcom" Grid.Column="3" Text="eb 90 00 00 02" Margin="5" VerticalContentAlignment="Center"/>
+
+                                <Button x:Name="usbsetting" Grid.Column="4" Margin="5" Content="保存协议设置" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Click="Usbsetting_Click"/>
                             </Grid>
                         </Grid>
                     </GroupBox>
@@ -131,16 +137,14 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
+
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Label Content="每包字节" Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="16"/>
-                            <TextBox x:Name="netlen" Grid.Row="0" Grid.Column="1" Margin="5" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Text="0" FontSize="16"/>
-                            <Button x:Name="netsavedata" Grid.Row="1" Grid.ColumnSpan="2" Margin="5" Content="保存数据" Click="Netsavedata_Click"/>
-                            <Button x:Name="netchangepath" Content="更改保存路径" Grid.Row="2" Grid.ColumnSpan="2" Margin="5" Click="Netchangepath_Click"/>
+                            <Button x:Name="netsavedata" Grid.Row="0" Grid.ColumnSpan="2" Margin="5" Content="保存数据" Click="Netsavedata_Click"/>
+                            <Button x:Name="netchangepath" Content="更改保存路径" Grid.Row="1" Grid.ColumnSpan="2" Margin="5" Click="Netchangepath_Click"/>
                         </Grid>
                     </GroupBox>
                     <GroupBox x:Name="groupBox6" Grid.Column="1" Header="消息通知" Margin="5,0,0,0">
@@ -158,10 +162,16 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <Label Content="开始采集指令" FontSize="16" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-                                <TextBox x:Name="netsendcom" Text="eb 90 00 00 01" Grid.Column="1" Margin="5" VerticalContentAlignment="Center"/>
-                                <Button x:Name="netsetting" Content="保存协议设置" Grid.Column="2" Margin="5"/>
+                                <TextBox x:Name="netstartcom" Text="eb 90 00 00 01" Grid.Column="1" Margin="5" VerticalContentAlignment="Center"/>
+
+                                <Label Content="停止采集指令" FontSize="16" Grid.Column="2" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                                <TextBox x:Name="netstopcom" Text="eb 90 00 00 02" Grid.Column="3" Margin="5" VerticalContentAlignment="Center"/>
+
+                                <Button x:Name="netsetting" Content="保存协议设置" Grid.Column="4" Margin="5"/>
                             </Grid>
                         </Grid>
                     </GroupBox>

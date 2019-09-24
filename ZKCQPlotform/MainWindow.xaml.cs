@@ -20,32 +20,73 @@ using LibUsbDotNet.Main;
 
 using PlotformUSB;
 using PlotformMSG;
-
+using System.IO;
+using System.Windows.Forms;
 
 namespace ZKCQPlotform
 {
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
+    /// 
+    public enum Datastate { start, stop}
     public partial class MainWindow : Window
     {
+        private MsgServer _messageServer = new MsgServer(Dispatcher.CurrentDispatcher);
         private readonly UsbServer _usbServer;
-        private string _usbstacom;
+
+        private string _usbstartcom = null;
+        private string _usbstopcom = null;
 
         private int _usbsavecnt = 0;
         private int _usbframecnt = 0;
+        private string _usbfilepath = "";
+        private FileStream _usbfilestream = null;
+        private BinaryWriter _usbsw = null;
+        private Datastate _usbdatastate = Datastate.stop;
 
+        private ActionBlock<byte[]> _usbactionblock;
 
         public MainWindow()
         {
-            InitializeComponent();           
+            InitializeComponent();
 
-            var _messageServer = new MsgServer(Dispatcher.CurrentDispatcher);
-            _usbServer = new UsbServer(_messageServer);
+            _usbactionblock = RegisterMethod<byte[]>(UsbSaveAction);
+
+            _usbServer = new UsbServer(_messageServer, _usbactionblock);
 
             usbmsgbox.ItemsSource = _messageServer._usbBindList;
             usbdevlist.ItemsSource = _messageServer._usbDeviceList;
 
+        }
+
+        private ActionBlock<T> RegisterMethod<T>(Action<T> action) => new ActionBlock<T>(action);
+
+        private void UsbSaveAction(byte[] data)
+        {
+            if (_usbdatastate == Datastate.start)
+            {
+                if (_usbfilepath != string.Empty)
+                {
+                    _usbsw.Write(data);
+                    _usbsw.Flush();
+                }
+                _usbframecnt--;
+                if (_usbframecnt <= 0)
+                {
+                    _usbdatastate = Datastate.stop;
+                    _usbsw.Dispose();
+                    _usbfilestream.Dispose();
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        usbsavedata.IsEnabled = true;
+                        usbfilepath.IsEnabled = true;
+                        usbsetting.IsEnabled = true;
+                    });
+                }
+
+            }
         }
 
         private byte[] TextToByteArry(string hexString)
@@ -61,23 +102,27 @@ namespace ZKCQPlotform
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            //usbconnect.IsEnabled = false;
-            //usbsavedata.IsEnabled = false;
-            //usbfilepath.IsEnabled = false;
-            //usbsetting.IsEnabled = false;
+            usbconnect.IsEnabled = false;
+            usbsavedata.IsEnabled = false;
+            usbfilepath.IsEnabled = false;
+            usbsetting.IsEnabled = false;
 
             bytecnt.Text = Properties.Settings.Default.usbbytecnt;
             framecnt.Text = Properties.Settings.Default.usbframecnt;
-            uabsendcom.Text = Properties.Settings.Default.usbstartcom;
+            uabstartcom.Text = Properties.Settings.Default.usbstartcom;
+            uabstopcom.Text = Properties.Settings.Default.usbstopcom;
 
-            _usbstacom = Properties.Settings.Default.usbstartcom;
+            _usbstartcom = Properties.Settings.Default.usbstartcom;
+            _usbstopcom = Properties.Settings.Default.usbstopcom;
+
+ 
         }
 
         private void Window_Closed(object sender, EventArgs e)
         {
             Properties.Settings.Default.usbbytecnt = bytecnt.Text;
             Properties.Settings.Default.usbframecnt = framecnt.Text;
-            Properties.Settings.Default.usbstartcom = _usbstacom;
+            Properties.Settings.Default.usbstartcom = _usbstartcom;
 
             Properties.Settings.Default.Save();
         }
@@ -93,14 +138,17 @@ namespace ZKCQPlotform
 
             if (_usbServer.UsbDeviceFinder())
             {
-                //usbconnect.IsEnabled = true;
-                //usbsavedata.IsEnabled = true;
-                //usbfilepath.IsEnabled = true;
-                //usbsetting.IsEnabled = true;
+                usbconnect.IsEnabled = true;
+                usbsavedata.IsEnabled = true;
+                usbfilepath.IsEnabled = true;
+                usbsetting.IsEnabled = true;
             }
             else
             {
-
+                usbconnect.IsEnabled = false;
+                usbsavedata.IsEnabled = false;
+                usbfilepath.IsEnabled = false;
+                usbsetting.IsEnabled = false;
             }
         }
 
@@ -110,36 +158,106 @@ namespace ZKCQPlotform
             {
                 if (_usbServer.UsbConnect((bool)usbconnect.IsChecked, int.Parse(bytecnt.Text.Trim())))
                 {
-                    if (_usbstacom != string.Empty)
+                    if (_usbstartcom != string.Empty)
                     {
-                        _usbServer.UsbStartComm(TextToByteArry(_usbstacom));
+                        if (!_usbServer.UsbStartComm(TextToByteArry(_usbstartcom)))
+                            _messageServer.AddWindowsMsg("发送开始指令错误！");
                     }
                 }
                 else
                 {
-                    // 恢复
+                    usbconnect.IsChecked = false;
                 }
             }
             else
             {
-                _usbServer.UsbConnect((bool)usbconnect.IsChecked, int.Parse(bytecnt.Text.Trim()));                  
+                if (_usbstopcom != string.Empty)
+                {           
+                    if (_usbServer.UsbStopComm(TextToByteArry(_usbstopcom)))
+                    {
+                        if (!_usbServer.UsbConnect((bool)usbconnect.IsChecked, int.Parse(bytecnt.Text.Trim())))
+                        {
+                            _messageServer.AddWindowsMsg("设备断开失败，请重新上电！");
+                        }
+                        else
+                        {
+                            usbconnect.IsEnabled = false;
+                            usbsavedata.IsEnabled = false;
+                            usbfilepath.IsEnabled = false;
+                            usbsetting.IsEnabled = false;
+                        }
+                    }
+                    else
+                    {
+                        _messageServer.AddWindowsMsg("发送结束指令错误！");
+
+                    }
+                }
+                else
+                {
+                    if (!_usbServer.UsbConnect((bool)usbconnect.IsChecked, int.Parse(bytecnt.Text.Trim())))
+                    {
+                        _messageServer.AddWindowsMsg("设备断开失败，请重新上电！");
+                    }
+                    else
+                    {
+                        usbconnect.IsEnabled = false;
+                        usbsavedata.IsEnabled = false;
+                        usbfilepath.IsEnabled = false;
+                        usbsetting.IsEnabled = false;
+                    }
+                }
+
             }
 
         }
 
         private void Usbsavedata_Click(object sender, RoutedEventArgs e)
         {
+            if (_usbfilepath == "")
+            {
+                var mDialog = new FolderBrowserDialog();
+                DialogResult result = mDialog.ShowDialog();
 
+                if (result == System.Windows.Forms.DialogResult.Cancel)
+                {
+                    return;
+                }
+
+                _usbfilepath = mDialog.SelectedPath.Trim();
+            }
+            _usbsavecnt++;
+            _usbframecnt = int.Parse(framecnt.Text.Trim());
+            var filename = DateTime.Now.ToString("MM-dd第") + _usbsavecnt.ToString() + "次usb数据";
+            string path = _usbfilepath + "\\" + filename;
+            _usbfilestream = new FileStream(path, FileMode.Create, FileAccess.Write);
+            _usbsw = new BinaryWriter(_usbfilestream);
+
+            usbsavedata.IsEnabled = false;
+            usbfilepath.IsEnabled = false;
+            usbsetting.IsEnabled = false;
+
+            _usbdatastate = Datastate.start;
         }
 
         private void Usbfilepath_Click(object sender, RoutedEventArgs e)
         {
+            var mDialog = new FolderBrowserDialog();
+            DialogResult result = mDialog.ShowDialog();
 
+            if (result == System.Windows.Forms.DialogResult.Cancel)
+            {
+                return;
+            }
+
+            _usbfilepath = mDialog.SelectedPath.Trim();
         }
 
         private void Usbsetting_Click(object sender, RoutedEventArgs e)
         {
-            _usbstacom = uabsendcom.Text;
+            _usbstartcom = uabstartcom.Text;
+            _usbstopcom = uabstopcom.Text;
+            _messageServer.AddWindowsMsg("协议参数已保存！");
         }
 
         private void Netconnect_Click(object sender, RoutedEventArgs e)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks.Dataflow;
 using LibUsbDotNet;
 using LibUsbDotNet.Main;
 using PlotformMSG;
@@ -15,20 +16,19 @@ namespace PlotformUSB
         private UsbEndpointWriter _usbwriter;
 
         private MsgServer _msgserver;
+        private ActionBlock<byte[]> _actionBlock;
 
-        private int _usbsavecnt = 0;
-        private string _usbfilepath;
-        private FileStream _usbfilestream;
-        private BinaryWriter _usbsw;
-
-        public UsbServer(MsgServer msgServer)
+        public UsbServer(MsgServer msgServer, ActionBlock<byte []> actionBlock)
         {
             _msgserver = msgServer;
+            _actionBlock = actionBlock;
         }
 
         private void OnRxEndPointData(object sender, EndpointDataEventArgs e)
         {
+            _msgserver.AddUsbMsg($" > {e.Count} data received");
 
+            _actionBlock.Post(e.Buffer);
         }
 
         public bool UsbDeviceFinder()
@@ -75,7 +75,7 @@ namespace PlotformUSB
                 }
                 catch (Exception ex)
                 {
-                    _msgserver.AddWindowsMsg("设备连接失败，请重新上电！");
+                    _msgserver.AddWindowsMsg("设备连接失败，请检查！");
                     return false;
                 }                     
                 return true;               
@@ -117,9 +117,8 @@ namespace PlotformUSB
 
         public bool UsbStartComm(byte[] sendcomm)
         {
-            int sendlength;
 
-            _usbwriter.Write(sendcomm, 100, out sendlength);
+            _usbwriter.Write(sendcomm, 100, out int sendlength);
 
             if (sendlength > 0)
                 return true;
@@ -127,7 +126,15 @@ namespace PlotformUSB
                 return false;
         }
 
+        public bool UsbStopComm(byte[] sendcomm)
+        {
+            _usbwriter.Write(sendcomm, 100, out int sendlength);
 
+            if (sendlength > 0)
+                return true;
+            else
+                return false;
+        }
 
 
     }
