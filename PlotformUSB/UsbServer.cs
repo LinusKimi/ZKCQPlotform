@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using LibUsbDotNet;
 using LibUsbDotNet.Main;
 using PlotformMSG;
@@ -14,6 +15,11 @@ namespace PlotformUSB
         private UsbEndpointWriter _usbwriter;
 
         private MsgServer _msgserver;
+
+        private int _usbsavecnt = 0;
+        private string _usbfilepath;
+        private FileStream _usbfilestream;
+        private BinaryWriter _usbsw;
 
         public UsbServer(MsgServer msgServer)
         {
@@ -49,29 +55,35 @@ namespace PlotformUSB
         {
             if (buttonclick)
             {
-                _usbdevice = UsbDevice.OpenUsbDevice(_usbDeviceFinder);
-                IUsbDevice wholeusbdevice = _usbdevice as IUsbDevice;
-
-                if (!(wholeusbdevice is null))
+                try
                 {
-                    wholeusbdevice.SetConfiguration(1);
-                    wholeusbdevice.ClaimInterface(0);
+                    _usbdevice = UsbDevice.OpenUsbDevice(_usbDeviceFinder);
+                    IUsbDevice wholeusbdevice = _usbdevice as IUsbDevice;
+
+                    if (!(wholeusbdevice is null))
+                    {
+                        wholeusbdevice.SetConfiguration(1);
+                        wholeusbdevice.ClaimInterface(0);
+                    }
+
+                    _usbreader = _usbdevice.OpenEndpointReader(ReadEndpointID.Ep01);
+                    _usbreader.DataReceived += OnRxEndPointData;
+                    _usbreader.ReadBufferSize = datalength;
+                    _usbreader.DataReceivedEnabled = true;
+
+                    _usbwriter = _usbdevice.OpenEndpointWriter(WriteEndpointID.Ep01);
                 }
-
-                _usbreader = _usbdevice.OpenEndpointReader(ReadEndpointID.Ep01);
-                _usbreader.DataReceived += OnRxEndPointData;
-                _usbreader.ReadBufferSize = datalength;
-                _usbreader.DataReceivedEnabled = true;
-
-                _usbwriter = _usbdevice.OpenEndpointWriter(WriteEndpointID.Ep01);
-
-                return true;
-                
+                catch (Exception ex)
+                {
+                    _msgserver.AddWindowsMsg("设备连接失败，请重新上电！");
+                    return false;
+                }                     
+                return true;               
             }
             else
             {
-                //if (_usbdevice != null)
-                //{
+                if (_usbdevice != null)
+                {
                     _usbreader.DataReceivedEnabled = false;
                     _usbreader.DataReceived -= OnRxEndPointData;
 
@@ -95,18 +107,28 @@ namespace PlotformUSB
                     UsbDevice.Exit();
                     _msgserver.AddWindowsMsg("采集设备需要重新上电");
                     return true;
-                //}
-                //else
-                //{
-                //    return false;
-                //}
+                }
+                else
+                {
+                    return false;
+                }
             }
         }
 
         public bool UsbStartComm(byte[] sendcomm)
         {
+            int sendlength;
 
-            return true;
+            _usbwriter.Write(sendcomm, 100, out sendlength);
+
+            if (sendlength > 0)
+                return true;
+            else
+                return false;
         }
+
+
+
+
     }
 }

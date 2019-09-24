@@ -13,12 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.Threading.Tasks.Dataflow;
 
 using LibUsbDotNet;
 using LibUsbDotNet.Main;
 
 using PlotformUSB;
 using PlotformMSG;
+
 
 namespace ZKCQPlotform
 {
@@ -28,10 +30,15 @@ namespace ZKCQPlotform
     public partial class MainWindow : Window
     {
         private readonly UsbServer _usbServer;
+        private string _usbstacom;
+
+        private int _usbsavecnt = 0;
+        private int _usbframecnt = 0;
+
 
         public MainWindow()
         {
-            InitializeComponent();
+            InitializeComponent();           
 
             var _messageServer = new MsgServer(Dispatcher.CurrentDispatcher);
             _usbServer = new UsbServer(_messageServer);
@@ -62,13 +69,15 @@ namespace ZKCQPlotform
             bytecnt.Text = Properties.Settings.Default.usbbytecnt;
             framecnt.Text = Properties.Settings.Default.usbframecnt;
             uabsendcom.Text = Properties.Settings.Default.usbstartcom;
+
+            _usbstacom = Properties.Settings.Default.usbstartcom;
         }
 
         private void Window_Closed(object sender, EventArgs e)
         {
             Properties.Settings.Default.usbbytecnt = bytecnt.Text;
             Properties.Settings.Default.usbframecnt = framecnt.Text;
-            Properties.Settings.Default.usbstartcom = uabsendcom.Text;
+            Properties.Settings.Default.usbstartcom = _usbstacom;
 
             Properties.Settings.Default.Save();
         }
@@ -77,6 +86,7 @@ namespace ZKCQPlotform
         {
 
         }
+
 
         private void Searchdevice_Click(object sender, RoutedEventArgs e)
         {
@@ -89,24 +99,32 @@ namespace ZKCQPlotform
                 //usbsetting.IsEnabled = true;
             }
             else
-                ;
+            {
+
+            }
         }
 
         private void Usbconnect_Click(object sender, RoutedEventArgs e)
         {
-            //if ((bool)usbconnect.IsChecked)
-            //{
-            //    if (_usbServer.UsbConnect((bool)usbconnect.IsChecked, int.Parse(bytecnt.Text.Trim())))
-            //    {
+            if ((bool)usbconnect.IsChecked)
+            {
+                if (_usbServer.UsbConnect((bool)usbconnect.IsChecked, int.Parse(bytecnt.Text.Trim())))
+                {
+                    if (_usbstacom != string.Empty)
+                    {
+                        _usbServer.UsbStartComm(TextToByteArry(_usbstacom));
+                    }
+                }
+                else
+                {
+                    // 恢复
+                }
+            }
+            else
+            {
+                _usbServer.UsbConnect((bool)usbconnect.IsChecked, int.Parse(bytecnt.Text.Trim()));                  
+            }
 
-            //    }
-            //}
-            //else
-            //{
-
-            //}
-
-            
         }
 
         private void Usbsavedata_Click(object sender, RoutedEventArgs e)
@@ -121,7 +139,7 @@ namespace ZKCQPlotform
 
         private void Usbsetting_Click(object sender, RoutedEventArgs e)
         {
-
+            _usbstacom = uabsendcom.Text;
         }
 
         private void Netconnect_Click(object sender, RoutedEventArgs e)
