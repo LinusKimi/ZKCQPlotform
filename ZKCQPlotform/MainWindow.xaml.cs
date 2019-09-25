@@ -15,9 +15,6 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Threading.Tasks.Dataflow;
 
-using LibUsbDotNet;
-using LibUsbDotNet.Main;
-
 using PlotformUSB;
 using PlotformMSG;
 using System.IO;
