@@ -123,6 +123,7 @@ namespace ZKCQPlotform
             Properties.Settings.Default.usbbytecnt = bytecnt.Text;
             Properties.Settings.Default.usbframecnt = framecnt.Text;
             Properties.Settings.Default.usbstartcom = _usbstartcom;
+            Properties.Settings.Default.usbstopcom = _usbstopcom;
 
             Properties.Settings.Default.Save();
         }

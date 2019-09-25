@@ -69,6 +69,7 @@ namespace PlotformUSB
                     _usbreader = _usbdevice.OpenEndpointReader(ReadEndpointID.Ep01);
                     _usbreader.DataReceived += OnRxEndPointData;
                     _usbreader.ReadBufferSize = datalength;
+                    _usbreader.Reset();
                     _usbreader.DataReceivedEnabled = true;
 
                     _usbwriter = _usbdevice.OpenEndpointWriter(WriteEndpointID.Ep01);
