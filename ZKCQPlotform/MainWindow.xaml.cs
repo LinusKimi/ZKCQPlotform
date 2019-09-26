@@ -16,7 +16,9 @@ using System.Windows.Threading;
 using System.Threading.Tasks.Dataflow;
 
 using PlotformUSB;
+using PlotformNET;
 using PlotformMSG;
+
 using System.IO;
 using System.Windows.Forms;
 
