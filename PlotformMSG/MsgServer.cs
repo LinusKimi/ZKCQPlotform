@@ -13,8 +13,10 @@ namespace PlotformMSG
         public BindingList<string> _usbBindList { get; set; }
         public BindingList<string> _netBindList { get; set; }
         public BindingList<string> _uartBindList { get; set; }
-        public BindingList<string> _usbDeviceList { get; set; }
 
+        public BindingList<string> _usbDeviceList { get; set; }
+        public BindingList<string> _netDeviceList { get; set; }
+        public BindingList<string> _uartDeviceList { get; set; }
 
         public MsgServer(Dispatcher dispatcher)
         {
@@ -23,46 +25,26 @@ namespace PlotformMSG
             _netBindList = new BindingList<string>();
             _uartBindList = new BindingList<string>();
             _usbDeviceList = new BindingList<string>();
+            _netDeviceList = new BindingList<string>();
+            _uartDeviceList = new BindingList<string>();
         }
 
-        public void AddUsbMsg(string msg)
+        public void AddMsg(BindingList<string> ts, string msg)
         {
-            _dispatcher.Invoke(() => 
+            _dispatcher.Invoke(()=> 
             {
-                if (_usbBindList.Count > 50)
-                    _usbBindList.RemoveAt(0);
-                _usbBindList.Add(msg);
+                if (ts.Count > 50)
+                    ts.RemoveAt(0);
+                ts.Add(msg);
             });
-            
+
         }
 
-        public void AddUsbDevice(string dev)
-        {
-            _dispatcher.Invoke(() =>
-            {
-                _usbDeviceList.Add(dev);
-            });
-            
-        }
-
-        public void AddNetMsg(string msg)
+        public void AddDevice(BindingList<string> ts, string dev)
         {
             _dispatcher.Invoke(()=>
             {
-                if (_netBindList.Count > 50)
-                    _netBindList.RemoveAt(0);
-                _netBindList.Add(msg);
-            });
-            
-        }
-
-        public void AddUartMsg(string msg)
-        {
-            _dispatcher.Invoke(()=>
-            {
-                if (_uartBindList.Count > 50)
-                    _uartBindList.RemoveAt(0);
-                _uartBindList.Add(msg);
+                ts.Add(dev);
             });
         }
 

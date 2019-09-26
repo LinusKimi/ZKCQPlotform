@@ -26,7 +26,7 @@ namespace PlotformUSB
 
         private void OnRxEndPointData(object sender, EndpointDataEventArgs e)
         {
-            _msgserver.AddUsbMsg($" > {e.Count} data received");
+            _msgserver.AddMsg(_msgserver._usbBindList, $" > {e.Count} data received");
 
             _actionBlock.Post(e.Buffer);
         }
@@ -46,7 +46,7 @@ namespace PlotformUSB
             else
             {
                 foreach (UsbRegistry registry in _usbRegistries)
-                    _msgserver.AddUsbDevice(registry.FullName);
+                    _msgserver.AddDevice(_msgserver._usbDeviceList, registry.FullName);
                 return true;
             }            
         }
@@ -120,7 +120,7 @@ namespace PlotformUSB
 
                     for (int i = 0; i < _msgserver._usbDeviceList.Count; ++i)
                         _msgserver._usbDeviceList.RemoveAt(0);
-                    _msgserver.AddUsbMsg($" > close device !");
+                    _msgserver.AddMsg(_msgserver._usbBindList, $" > close device !");
                     _msgserver.AddWindowsMsg("采集设备需要重新上电");
                     return true;
                 }

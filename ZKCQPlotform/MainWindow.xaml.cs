@@ -33,6 +33,7 @@ namespace ZKCQPlotform
     {
         private MsgServer _messageServer = new MsgServer(Dispatcher.CurrentDispatcher);
         private readonly UsbServer _usbServer;
+        private readonly NetServer _netServer;
 
         private string _usbstartcom = null;
         private string _usbstopcom = null;
@@ -45,6 +46,7 @@ namespace ZKCQPlotform
         private Datastate _usbdatastate = Datastate.stop;
 
         private ActionBlock<byte[]> _usbactionblock;
+        private ActionBlock<byte[]> _netactionblock;
 
         public MainWindow()
         {
@@ -53,10 +55,13 @@ namespace ZKCQPlotform
             _usbactionblock = RegisterMethod<byte[]>(UsbSaveAction);
 
             _usbServer = new UsbServer(_messageServer, _usbactionblock);
+            _netServer = new NetServer(_messageServer, _netactionblock);
 
             usbmsgbox.ItemsSource = _messageServer._usbBindList;
             usbdevlist.ItemsSource = _messageServer._usbDeviceList;
 
+            netmsgbox.ItemsSource = _messageServer._netBindList;
+            netdevlist.ItemsSource = _messageServer._netDeviceList;
         }
 
         private ActionBlock<T> RegisterMethod<T>(Action<T> action) => new ActionBlock<T>(action);
