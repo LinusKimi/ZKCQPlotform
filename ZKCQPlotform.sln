@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlotformUSB", "PlotformUSB\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlotformMSG", "PlotformMSG\PlotformMSG.csproj", "{C08675F9-31EE-40B8-9798-8AB09AF0A6D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlotformNET", "PlotformNET\PlotformNET.csproj", "{E4C37338-9677-4931-8329-F25ECEB6732B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlotformNET", "PlotformNET\PlotformNET.csproj", "{E4C37338-9677-4931-8329-F25ECEB6732B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

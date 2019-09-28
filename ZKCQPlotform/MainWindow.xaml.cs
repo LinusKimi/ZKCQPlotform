@@ -28,7 +28,7 @@ namespace ZKCQPlotform
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
     /// 
-    public enum Datastate { start, stop}
+
     public partial class MainWindow : Window
     {
         private MsgServer _messageServer = new MsgServer(Dispatcher.CurrentDispatcher);
@@ -37,22 +37,19 @@ namespace ZKCQPlotform
 
         private string _usbstartcom = null;
         private string _usbstopcom = null;
-
-        private int _usbsavecnt = 0;
-        private int _usbframecnt = 0;
-        private string _usbfilepath = "";
-        private FileStream _usbfilestream = null;
-        private BinaryWriter _usbsw = null;
-        private Datastate _usbdatastate = Datastate.stop;
+        private string _netstartcom = null;
+        private string _netstopcom = null;
 
         private ActionBlock<byte[]> _usbactionblock;
         private ActionBlock<byte[]> _netactionblock;
+
 
         public MainWindow()
         {
             InitializeComponent();
 
             _usbactionblock = RegisterMethod<byte[]>(UsbSaveAction);
+            _netactionblock = RegisterMethod<byte[]>(NetSaveAction);
 
             _usbServer = new UsbServer(_messageServer, _usbactionblock);
             _netServer = new NetServer(_messageServer, _netactionblock);
@@ -68,19 +65,19 @@ namespace ZKCQPlotform
 
         private void UsbSaveAction(byte[] data)
         {
-            if (_usbdatastate == Datastate.start)
+            if (_usbServer._usbdatastate == PlotformUSB.Datastate.start)
             {
-                if (_usbfilepath != string.Empty)
+                if (_usbServer._usbfilepath != string.Empty)
                 {
-                    _usbsw.Write(data);
-                    _usbsw.Flush();
+                    _usbServer._usbsw.Write(data);
+                    _usbServer._usbsw.Flush();
                 }
-                _usbframecnt--;
-                if (_usbframecnt <= 0)
+                _usbServer._usbframecnt--;
+                if (_usbServer._usbframecnt <= 0)
                 {
-                    _usbdatastate = Datastate.stop;
-                    _usbsw.Dispose();
-                    _usbfilestream.Dispose();
+                    _usbServer._usbdatastate = PlotformUSB.Datastate.stop;
+                    _usbServer._usbsw.Dispose();
+                    _usbServer._usbfilestream.Dispose();
 
                     Dispatcher.Invoke(() =>
                     {
@@ -93,6 +90,29 @@ namespace ZKCQPlotform
             }
         }
 
+        private void NetSaveAction(byte[] data)
+        {
+            if (_netServer._netdatastate == PlotformNET.Datastate.start)
+            {
+                if (_netServer._netfilepath != string.Empty)
+                {
+                    _netServer._netsw.Write(data);
+                    _netServer._netsw.Flush();
+                }
+                _netServer._netframecnt--;
+                if (_netServer._netframecnt <= 0)
+                {
+                    _netServer._netdatastate = PlotformNET.Datastate.stop;
+                    _netServer._netsw.Dispose();
+                    _netServer._netfilestream.Dispose();
+
+                    Dispatcher.Invoke(()=>
+                    {
+
+                    });
+                }
+            }
+        }
         private byte[] TextToByteArry(string hexString)
         {
             hexString = hexString.Replace(" ", "");
@@ -116,10 +136,17 @@ namespace ZKCQPlotform
             uabstartcom.Text = Properties.Settings.Default.usbstartcom;
             uabstopcom.Text = Properties.Settings.Default.usbstopcom;
 
+            iptextbox.Text = Properties.Settings.Default.netip;
+            porttextbox.Text = Properties.Settings.Default.netport;
+            netstartcom.Text = Properties.Settings.Default.netstartcom;
+            netstopcom.Text = Properties.Settings.Default.netstopcom;
+
             _usbstartcom = Properties.Settings.Default.usbstartcom;
             _usbstopcom = Properties.Settings.Default.usbstopcom;
 
- 
+            _netstartcom = Properties.Settings.Default.netstartcom;
+            _netstopcom = Properties.Settings.Default.netstopcom;
+
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -128,6 +155,9 @@ namespace ZKCQPlotform
             Properties.Settings.Default.usbframecnt = framecnt.Text;
             Properties.Settings.Default.usbstartcom = _usbstartcom;
             Properties.Settings.Default.usbstopcom = _usbstopcom;
+
+            Properties.Settings.Default.netstartcom = _netstartcom;
+            Properties.Settings.Default.netstopcom = _netstopcom;
 
             Properties.Settings.Default.Save();
         }
@@ -219,7 +249,7 @@ namespace ZKCQPlotform
 
         private void Usbsavedata_Click(object sender, RoutedEventArgs e)
         {
-            if (_usbfilepath == "")
+            if (_usbServer._usbfilepath == "")
             {
                 var mDialog = new FolderBrowserDialog();
                 DialogResult result = mDialog.ShowDialog();
@@ -229,20 +259,20 @@ namespace ZKCQPlotform
                     return;
                 }
 
-                _usbfilepath = mDialog.SelectedPath.Trim();
+                _usbServer._usbfilepath = mDialog.SelectedPath.Trim();
             }
-            _usbsavecnt++;
-            _usbframecnt = int.Parse(framecnt.Text.Trim());
-            var filename = DateTime.Now.ToString("MM-dd第") + _usbsavecnt.ToString() + "次usb数据";
-            string path = _usbfilepath + "\\" + filename;
-            _usbfilestream = new FileStream(path, FileMode.Create, FileAccess.Write);
-            _usbsw = new BinaryWriter(_usbfilestream);
+            _usbServer._usbsavecnt++;
+            _usbServer._usbframecnt = int.Parse(framecnt.Text.Trim());
+            var filename = DateTime.Now.ToString("MM-dd第") + _usbServer._usbsavecnt.ToString() + "次usb数据";
+            string path = _usbServer._usbfilepath + "\\" + filename;
+            _usbServer._usbfilestream = new FileStream(path, FileMode.Create, FileAccess.Write);
+            _usbServer._usbsw = new BinaryWriter(_usbServer._usbfilestream);
 
             usbsavedata.IsEnabled = false;
             usbfilepath.IsEnabled = false;
             usbsetting.IsEnabled = false;
 
-            _usbdatastate = Datastate.start;
+            _usbServer._usbdatastate = PlotformUSB.Datastate.start;
         }
 
         private void Usbfilepath_Click(object sender, RoutedEventArgs e)
@@ -255,7 +285,7 @@ namespace ZKCQPlotform
                 return;
             }
 
-            _usbfilepath = mDialog.SelectedPath.Trim();
+            _usbServer._usbfilepath = mDialog.SelectedPath.Trim();
         }
 
         private void Usbsetting_Click(object sender, RoutedEventArgs e)
@@ -267,7 +297,60 @@ namespace ZKCQPlotform
 
         private void Netconnect_Click(object sender, RoutedEventArgs e)
         {
+            if ((bool)netconnect.IsChecked)
+            {
+                if (iptextbox.Text == string.Empty || porttextbox.Text == string.Empty)
+                    _messageServer.AddWindowsMsg("请正确填写网络信息");
+                else
+                {
+                    if (_netServer.Start(iptextbox.Text, Convert.ToUInt16(porttextbox.Text)))
+                    {
+                        if (_netstartcom != string.Empty)
+                        {
+                            _netstartcom = netstartcom.Text;
+                            if (_netServer.NetSend(TextToByteArry(_netstartcom), TextToByteArry(_netstartcom).Length))
+                                _messageServer.AddMsg(_messageServer._netBindList, " > Send start commend !");
+                        }
+                        //_messageServer.AddWindowsMsg("网络成功 ！");
+                    }
+                    else
+                    {
+                        _messageServer.AddWindowsMsg("网络服务启动失败！");
+                    }
+                } 
+            }
+            else
+            {
+                if (_netstopcom != string.Empty)
+                {
+                    if (_netServer.NetSend(TextToByteArry(_netstopcom), TextToByteArry(_netstopcom).Length))
+                    {
+                        if (_netServer.Stop())
+                        {
+                            _netServer.Destroy();
+                        }
+                        else
+                        {
+                            
+                        }
+                    }
+                    else
+                    {
+                        _messageServer.AddWindowsMsg("发送结束指令错误！");
+                    }
+                }
+                else
+                {
+                    if (_netServer.Stop())
+                    {
+                        _netServer.Destroy();
+                    }
+                    else
+                    {
 
+                    }
+                }
+            }
         }
 
         private void Netsavedata_Click(object sender, RoutedEventArgs e)

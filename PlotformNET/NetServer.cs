@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks.Dataflow;
 using HPSocketCS;
@@ -6,6 +7,7 @@ using PlotformMSG;
 
 namespace PlotformNET
 {
+    public enum Datastate { start, stop }
     public class NetServer
     {
         private TcpPackServer _tcppackserver;
@@ -13,6 +15,13 @@ namespace PlotformNET
 
         private MsgServer _msgserver;
         private ActionBlock<byte[]> _actionBlock;
+
+        public int _netsavecnt = 0;
+        public int _netframecnt = 0;
+        public string _netfilepath = "";
+        public FileStream _netfilestream = null;
+        public BinaryWriter _netsw = null;
+        public Datastate _netdatastate = Datastate.stop;
 
         public NetServer(MsgServer msgserver, ActionBlock<byte[]> actionBlock)
         {

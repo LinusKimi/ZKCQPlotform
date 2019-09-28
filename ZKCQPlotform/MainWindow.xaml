@@ -250,9 +250,8 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBox x:Name="uartheaderhexone" Grid.Column="0" Text="eb" Margin="5" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="16"/>
-                                <TextBox x:Name="uartheaderhextwo" Grid.Column="1" Text="90" Margin="5" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="16"/>
-                            </Grid>
+                                <TextBox x:Name="uartheaderhexone" Grid.Column="0" Grid.ColumnSpan="2" Text="eb 90" Margin="5" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" FontSize="16"/>
+                                </Grid>
                             <Button x:Name="uartsetting" Content="保存协议设置" Grid.Row="2" Grid.Column="1" Margin="5"/>
                         </Grid>
                     </GroupBox>

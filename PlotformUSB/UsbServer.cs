@@ -7,6 +7,7 @@ using PlotformMSG;
 
 namespace PlotformUSB
 {
+    public enum Datastate { start, stop }
     public class UsbServer
     {
         private UsbDevice _usbdevice;
@@ -17,6 +18,13 @@ namespace PlotformUSB
 
         private MsgServer _msgserver;
         private ActionBlock<byte[]> _actionBlock;
+
+        public int _usbsavecnt = 0;
+        public int _usbframecnt = 0;
+        public string _usbfilepath = "";
+        public FileStream _usbfilestream = null;
+        public BinaryWriter _usbsw = null;
+        public Datastate _usbdatastate = Datastate.stop;
 
         public UsbServer(MsgServer msgServer, ActionBlock<byte []> actionBlock)
         {

@@ -70,5 +70,53 @@ namespace ZKCQPlotform.Properties {
                 this["usbstopcom"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("192.168.0.1")]
+        public string netip {
+            get {
+                return ((string)(this["netip"]));
+            }
+            set {
+                this["netip"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("8000")]
+        public string netport {
+            get {
+                return ((string)(this["netport"]));
+            }
+            set {
+                this["netport"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string netstartcom {
+            get {
+                return ((string)(this["netstartcom"]));
+            }
+            set {
+                this["netstartcom"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string netstopcom {
+            get {
+                return ((string)(this["netstopcom"]));
+            }
+            set {
+                this["netstopcom"] = value;
+            }
+        }
     }
 }
