@@ -26,5 +26,20 @@
     <Setting Name="netstopcom" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="uartheartflag" Type="System.String" Scope="User">
+      <Value Profile="(Default)">eb 90</Value>
+    </Setting>
+    <Setting Name="uartheartlen" Type="System.String" Scope="User">
+      <Value Profile="(Default)">4</Value>
+    </Setting>
+    <Setting Name="uartdatelen" Type="System.String" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="uartstartcom" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="uartstopcom" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

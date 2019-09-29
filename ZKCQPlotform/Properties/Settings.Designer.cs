@@ -118,5 +118,65 @@ namespace ZKCQPlotform.Properties {
                 this["netstopcom"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("eb 90")]
+        public string uartheartflag {
+            get {
+                return ((string)(this["uartheartflag"]));
+            }
+            set {
+                this["uartheartflag"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("4")]
+        public string uartheartlen {
+            get {
+                return ((string)(this["uartheartlen"]));
+            }
+            set {
+                this["uartheartlen"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public string uartdatelen {
+            get {
+                return ((string)(this["uartdatelen"]));
+            }
+            set {
+                this["uartdatelen"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string uartstartcom {
+            get {
+                return ((string)(this["uartstartcom"]));
+            }
+            set {
+                this["uartstartcom"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string uartstopcom {
+            get {
+                return ((string)(this["uartstopcom"]));
+            }
+            set {
+                this["uartstopcom"] = value;
+            }
+        }
     }
 }

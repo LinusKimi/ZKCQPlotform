@@ -3,9 +3,29 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:port="clr-namespace:System.IO.Ports;assembly=System"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:ZKCQPlotform"
         mc:Ignorable="d"
         Title="数据采集平台" Height="450" Width="800" Loaded="Window_Loaded" Closed="Window_Closed" Closing="Window_Closing">
+    <Window.Resources>
+        <ObjectDataProvider x:Key="EnParity" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="port:Parity"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider x:Key="EnStopBit" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="port:StopBits"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <x:Array x:Key="DataBits" Type="{x:Type sys:String}">
+            <sys:String>8</sys:String>
+        </x:Array>
+        <x:Array x:Key="BaudRate" Type="{x:Type sys:String}">
+            <sys:String>115200</sys:String>
+        </x:Array>
+    </Window.Resources>
     <Grid>
         <TabControl x:Name="tabControl" Margin="10">
             <TabItem Header="USB">
@@ -184,7 +204,7 @@
                                 <Label Content="停止采集指令" FontSize="16" Grid.Column="2" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
                                 <TextBox x:Name="netstopcom" Text="eb 90 00 00 02" Grid.Column="3" Margin="5" VerticalContentAlignment="Center"/>
 
-                                <Button x:Name="netsetting" Content="保存协议设置" Grid.Column="4" Margin="5"/>
+                                <Button x:Name="netsetting" Content="保存协议设置" Grid.Column="4" Margin="5" Click="Netsetting_Click"/>
                             </Grid>
                         </Grid>
                     </GroupBox>
@@ -214,12 +234,49 @@
                                 <ColumnDefinition Width="13*"/>
                                 <ColumnDefinition Width="18*"/>
                             </Grid.ColumnDefinitions>
+                            <Label Content="端口:" VerticalContentAlignment="Center"/>
+                            <Label Content="波特率:" Grid.Row="1" VerticalContentAlignment="Center"/>
+                            <Label Content="数据位:" Grid.Row="2" VerticalContentAlignment="Center"/>
+                            <Label Content="校验位:" Grid.Row="3" VerticalContentAlignment="Center"/>
+                            <Label Content="停止位:" Grid.Row="4" VerticalContentAlignment="Center"/>
+                            <ComboBox x:Name="uartport" Grid.Row="0" Grid.Column="1" Margin="5" DropDownOpened="Uartport_DropDownOpened"/>
+                            <ComboBox x:Name="uartbaudrate" Grid.Row="1" Grid.Column="1" Margin="5" ItemsSource="{Binding Source={StaticResource BaudRate}}" SelectedIndex="0"/>
+                            <ComboBox x:Name="uartdatabit" Grid.Row="2" Grid.Column="1" Margin="5" ItemsSource="{Binding Source={StaticResource DataBits}}" SelectedIndex="0"/>
+                            <ComboBox x:Name="uartenparity" Grid.Row="3" Grid.Column="1" Margin="5" ItemsSource="{Binding Source={StaticResource EnParity}}" SelectedIndex="0"/>
+                            <ComboBox x:Name="uartstopbit" Grid.Row="4" Grid.Column="1" Margin="5" ItemsSource="{Binding Source={StaticResource EnStopBit}}" SelectedIndex="1"/>
+
+                            <ToggleButton x:Name="uartconnect" Grid.Row="5" Grid.ColumnSpan="2" Margin="5" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsChecked="False" Click="Uartconnect_Click">
+                                <ToggleButton.Style>
+                                    <Style TargetType="ToggleButton">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter Property="Content" Value="关闭串口"/>
+                                            </Trigger>
+                                            <Trigger Property="IsChecked" Value="False">
+                                                <Setter Property="Content" Value="打开串口"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ToggleButton.Style>
+                            </ToggleButton>
 
                         </Grid>
                     </GroupBox>
                     <GroupBox Header="功能" Grid.Row="1" Margin="0,0,0,0">
                         <Grid Margin="0">
-
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="40*"/>
+                                <ColumnDefinition Width="53*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="帧数" FontSize="16" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                            <TextBox x:Name="uartframecnt" Text="200" Margin="5" Grid.Column="1" VerticalContentAlignment="Center"/>
+                            <Button x:Name="uartsavedata" Grid.Row="1" Grid.ColumnSpan="2" Margin="5" Content="保存数据" Click="Uartsavedata_Click"/>
+                            <Button x:Name="uartchangepath" Grid.Row="2" Grid.ColumnSpan="2" Margin="5" Content="更改保存路径" Click="Uartchangepath_Click"/>
                         </Grid>
                     </GroupBox>
                     <GroupBox Header="消息通知" Grid.Column="1" Margin="5,0,0,0">
@@ -244,15 +301,17 @@
                             <Label Grid.Row="0" Grid.Column="2" Content="帧头长度" FontSize="16" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
                             <TextBox x:Name="uartheaderlength" Text="4" Grid.Row="0" Grid.Column="3" Margin="5" FontSize="16" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
                             <Label Content="采集指令" Grid.Row="1" Grid.Column="2" FontSize="16" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-                            <TextBox x:Name="uartsendcom" Grid.Row="1" Grid.Column="3" Margin="5" Text="eb 50 00 00 01" VerticalContentAlignment="Center"/>
+                            <TextBox x:Name="uartstartcom" Grid.Row="1" Grid.Column="3" Margin="5" Text="eb 50 00 00 01" VerticalContentAlignment="Center"/>
+                            <Label Content="结束指令" Grid.Row="2" Grid.Column="2" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="16"/>
+                            <TextBox x:Name="uartstopcom" Grid.Row="2" Grid.Column="3" Margin="5" Text="eb 50 00 00 02" VerticalContentAlignment="Center"/>
                             <Grid Grid.Row="0" Grid.Column="1" Margin="0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBox x:Name="uartheaderhexone" Grid.Column="0" Grid.ColumnSpan="2" Text="eb 90" Margin="5" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" FontSize="16"/>
-                                </Grid>
-                            <Button x:Name="uartsetting" Content="保存协议设置" Grid.Row="2" Grid.Column="1" Margin="5"/>
+                                <TextBox x:Name="uartheardflag" Grid.Column="0" Grid.ColumnSpan="2" Text="eb 90" Margin="5" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" FontSize="16"/>
+                            </Grid>
+                            <Button x:Name="uartsetting" Content="保存协议设置" Grid.Row="2" Grid.Column="1" Margin="5" Click="Uartsetting_Click"/>
                         </Grid>
                     </GroupBox>
                 </Grid>

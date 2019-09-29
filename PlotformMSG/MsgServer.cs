@@ -16,7 +16,6 @@ namespace PlotformMSG
 
         public BindingList<string> _usbDeviceList { get; set; }
         public BindingList<string> _netDeviceList { get; set; }
-        public BindingList<string> _uartDeviceList { get; set; }
 
         public MsgServer(Dispatcher dispatcher)
         {
@@ -25,8 +24,7 @@ namespace PlotformMSG
             _netBindList = new BindingList<string>();
             _uartBindList = new BindingList<string>();
             _usbDeviceList = new BindingList<string>();
-            _netDeviceList = new BindingList<string>();
-            _uartDeviceList = new BindingList<string>();
+            _netDeviceList = new BindingList<string>();           
         }
 
         public void AddMsg(BindingList<string> ts, string msg)

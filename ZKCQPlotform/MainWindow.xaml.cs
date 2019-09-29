@@ -21,6 +21,7 @@ using PlotformMSG;
 
 using System.IO;
 using System.Windows.Forms;
+using PlotformUart;
 
 namespace ZKCQPlotform
 {
@@ -34,15 +35,18 @@ namespace ZKCQPlotform
         private MsgServer _messageServer = new MsgServer(Dispatcher.CurrentDispatcher);
         private readonly UsbServer _usbServer;
         private readonly NetServer _netServer;
+        private readonly UartServer _uartServer;
 
         private string _usbstartcom = null;
         private string _usbstopcom = null;
         private string _netstartcom = null;
         private string _netstopcom = null;
+        private string _uartstartcom = null;
+        private string _uartstopcom = null;
 
         private ActionBlock<byte[]> _usbactionblock;
         private ActionBlock<byte[]> _netactionblock;
-
+        private ActionBlock<byte[]> _uartactionblock;
 
         public MainWindow()
         {
@@ -50,15 +54,20 @@ namespace ZKCQPlotform
 
             _usbactionblock = RegisterMethod<byte[]>(UsbSaveAction);
             _netactionblock = RegisterMethod<byte[]>(NetSaveAction);
+            _uartactionblock = RegisterMethod<byte[]>(UartSaveAction);
 
             _usbServer = new UsbServer(_messageServer, _usbactionblock);
             _netServer = new NetServer(_messageServer, _netactionblock);
+            _uartServer = new UartServer(_messageServer, _uartactionblock);
 
             usbmsgbox.ItemsSource = _messageServer._usbBindList;
             usbdevlist.ItemsSource = _messageServer._usbDeviceList;
 
             netmsgbox.ItemsSource = _messageServer._netBindList;
             netdevlist.ItemsSource = _messageServer._netDeviceList;
+
+            uartmsgbox.ItemsSource = _messageServer._uartBindList;
+            
         }
 
         private ActionBlock<T> RegisterMethod<T>(Action<T> action) => new ActionBlock<T>(action);
@@ -113,6 +122,11 @@ namespace ZKCQPlotform
                 }
             }
         }
+
+        private void UartSaveAction(byte[] data)
+        {
+
+        }
         private byte[] TextToByteArry(string hexString)
         {
             hexString = hexString.Replace(" ", "");
@@ -126,6 +140,11 @@ namespace ZKCQPlotform
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            //Binding binding1 = new Binding { Source = _uartServer, Path = new PropertyPath("PortNames") };
+            //Binding binding2 = new Binding { Source = _uartServer, Path = new PropertyPath("DataBits") };
+            //Binding binding3 = new Binding { Source = _uartServer, Path = new PropertyPath("Parity") };
+            //System.Windows.Data.Binding binding4 = new Binding { Source = , Path = new PropertyPath("StopBits") };
+
             usbconnect.IsEnabled = false;
             usbsavedata.IsEnabled = false;
             usbfilepath.IsEnabled = false;
@@ -265,7 +284,7 @@ namespace ZKCQPlotform
             _usbServer._usbframecnt = int.Parse(framecnt.Text.Trim());
             var filename = DateTime.Now.ToString("MM-dd第") + _usbServer._usbsavecnt.ToString() + "次usb数据";
             string path = _usbServer._usbfilepath + "\\" + filename;
-            _usbServer._usbfilestream = new FileStream(path, FileMode.Create, FileAccess.Write);
+            _usbServer._usbfilestream = new FileStream(@path, FileMode.Create, FileAccess.Write);
             _usbServer._usbsw = new BinaryWriter(_usbServer._usbfilestream);
 
             usbsavedata.IsEnabled = false;
@@ -331,7 +350,7 @@ namespace ZKCQPlotform
                         }
                         else
                         {
-                            
+                            _messageServer.AddWindowsMsg("网络服务停止失败！");
                         }
                     }
                     else
@@ -347,7 +366,7 @@ namespace ZKCQPlotform
                     }
                     else
                     {
-
+                        _messageServer.AddWindowsMsg("");
                     }
                 }
             }
@@ -355,14 +374,122 @@ namespace ZKCQPlotform
 
         private void Netsavedata_Click(object sender, RoutedEventArgs e)
         {
+            if (_netServer._netfilepath == "")
+            {
+                var mDialog = new FolderBrowserDialog();
+                DialogResult result = mDialog.ShowDialog();
 
+                if (result == System.Windows.Forms.DialogResult.Cancel)
+                    return;
+                _netServer._netfilepath = mDialog.SelectedPath.Trim();
+            }
+            _netServer._netsavecnt++;
+            _netServer._netframecnt = int.Parse(netframecnt.Text.Trim());
+            var filename = DateTime.Now.ToString("MM-dd第") + _netServer._netsavecnt.ToString() + "次net数据";
+            string path = _netServer._netfilepath + "\\" + filename;
+            _netServer._netfilestream = new FileStream(path, FileMode.Create, FileAccess.Write);
+            _netServer._netsw = new BinaryWriter(_netServer._netfilestream);
+
+            // button
+
+            _netServer._netdatastate = PlotformNET.Datastate.start;
         }
 
         private void Netchangepath_Click(object sender, RoutedEventArgs e)
         {
+            var mDialog = new FolderBrowserDialog();
+            DialogResult result = mDialog.ShowDialog();
 
+            if (result == System.Windows.Forms.DialogResult.Cancel)
+                return;
+            _netServer._netfilepath = mDialog.SelectedPath.Trim();
         }
 
+        private void Netsetting_Click(object sender, RoutedEventArgs e)
+        {
+            _netstartcom = netstartcom.Text;
+            _netstopcom = netstopcom.Text;
+            _messageServer.AddWindowsMsg("协议参数已保存");
+        }
 
+        private void Uartport_DropDownOpened(object sender, EventArgs e)
+        {
+            _uartServer.CheckPort();
+        }
+
+        private void Uartconnect_Click(object sender, RoutedEventArgs e)
+        {
+            if ((bool)uartconnect.IsChecked)
+            {
+                try
+                {
+                    _uartServer.OpenPort((string)uartport.SelectedItem, Convert.ToInt32(uartbaudrate.SelectedItem), 8);
+                }
+                catch (Exception ex)
+                {
+                    _messageServer.AddWindowsMsg(ex.Message);
+                    uartconnect.IsChecked = false;
+                    return;
+                }
+                if (_uartstartcom != string.Empty)
+                {
+                    _uartServer.SendData(TextToByteArry(_uartstartcom));
+                }
+            }
+            else
+            {
+                if (_uartstopcom != string.Empty)
+                    _uartServer.SendData(TextToByteArry(_uartstopcom));
+
+                _uartServer.ClosePort();
+            }
+        }
+
+        private void Uartsavedata_Click(object sender, RoutedEventArgs e)
+        {
+            if (_uartServer._uartfilepath == "")
+            {
+                var mDialog = new FolderBrowserDialog();
+                DialogResult result = mDialog.ShowDialog();
+
+                if (result == System.Windows.Forms.DialogResult.Cancel)
+                    return;
+                _uartServer._uartfilepath = mDialog.SelectedPath.Trim();
+            }
+            _uartServer._uartsavecnt++;
+            _uartServer._uartframecnt = int.Parse(uartframecnt.Text.Trim());
+            var filename = DateTime.Now.ToString("MM-dd第") + _uartServer._uartsavecnt.ToString() + "次uart数据";
+            string path = _uartServer._uartfilepath + "\\" + filename;
+            _uartServer._uartfilestream = new FileStream(path, FileMode.Create, FileAccess.Write);
+            _uartServer._uartsw = new BinaryWriter(_uartServer._uartfilestream);
+
+            _uartServer._uartdatastate = PlotformUart.Datastate.start;
+        }
+
+        private void Uartchangepath_Click(object sender, RoutedEventArgs e)
+        {
+            var mDialog = new FolderBrowserDialog();
+            DialogResult result = mDialog.ShowDialog();
+
+            if (result == System.Windows.Forms.DialogResult.Cancel)
+                return;
+            _uartServer._uartfilepath = mDialog.SelectedPath.Trim();
+        }
+
+        private void Uartsetting_Click(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.uartheartflag = uartheardflag.Text;
+            Properties.Settings.Default.uartheartlen = uartheaderlength.Text;
+            Properties.Settings.Default.uartdatelen = uartdatalength.Text;
+            Properties.Settings.Default.uartstartcom = uartstartcom.Text;
+            Properties.Settings.Default.uartstopcom = uartstopcom.Text;
+
+            _uartstopcom = uartstartcom.Text;
+            _uartstopcom = uartstopcom.Text;
+
+            _uartServer._uartheardflag = TextToByteArry(uartheardflag.Text);
+            _uartServer._uartheardlen = Convert.ToInt32(uartheaderlength.Text);
+            _uartServer._uartdatalen = Convert.ToInt32(uartdatalength.Text);
+        }
     }
 }

@@ -117,6 +117,10 @@
       <Project>{e4c37338-9677-4931-8329-f25eceb6732b}</Project>
       <Name>PlotformNET</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PlotformUart\PlotformUart.csproj">
+      <Project>{a477a615-245b-4057-ae0a-281920e9a2cc}</Project>
+      <Name>PlotformUart</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PlotformUSB\PlotformUSB.csproj">
       <Project>{ee3002b4-78ed-4084-b937-e7932e44fcde}</Project>
       <Name>PlotformUSB</Name>
