@@ -127,6 +127,7 @@ namespace ZKCQPlotform
         {
 
         }
+
         private byte[] TextToByteArry(string hexString)
         {
             hexString = hexString.Replace(" ", "");
@@ -225,41 +226,62 @@ namespace ZKCQPlotform
             }
             else
             {
+                //if (_usbstopcom != string.Empty)
+                //{           
+                //    if (_usbServer.UsbStopComm(TextToByteArry(_usbstopcom)))
+                //    {
+                //        if (!_usbServer.UsbConnect((bool)usbconnect.IsChecked, int.Parse(bytecnt.Text.Trim())))
+                //        {
+                //            _messageServer.AddWindowsMsg("设备断开失败，请重新上电！");
+                //        }
+                //        else
+                //        {
+                //            usbconnect.IsEnabled = false;
+                //            usbsavedata.IsEnabled = false;
+                //            usbfilepath.IsEnabled = false;
+                //            usbsetting.IsEnabled = false;
+                //        }
+                //    }
+                //    else
+                //    {
+                //        _messageServer.AddWindowsMsg("发送结束指令错误！");
+
+                //    }
+                //}
+                //else
+                //{
+                //    if (!_usbServer.UsbConnect((bool)usbconnect.IsChecked, int.Parse(bytecnt.Text.Trim())))
+                //    {
+                //        _messageServer.AddWindowsMsg("设备断开失败，请重新上电！");
+                //    }
+                //    else
+                //    {
+                //        usbconnect.IsEnabled = false;
+                //        usbsavedata.IsEnabled = false;
+                //        usbfilepath.IsEnabled = false;
+                //        usbsetting.IsEnabled = false;
+                //    }
+                //}
                 if (_usbstopcom != string.Empty)
-                {           
+                {
                     if (_usbServer.UsbStopComm(TextToByteArry(_usbstopcom)))
-                    {
-                        if (!_usbServer.UsbConnect((bool)usbconnect.IsChecked, int.Parse(bytecnt.Text.Trim())))
-                        {
-                            _messageServer.AddWindowsMsg("设备断开失败，请重新上电！");
-                        }
-                        else
-                        {
-                            usbconnect.IsEnabled = false;
-                            usbsavedata.IsEnabled = false;
-                            usbfilepath.IsEnabled = false;
-                            usbsetting.IsEnabled = false;
-                        }
-                    }
+                    {; }
                     else
                     {
                         _messageServer.AddWindowsMsg("发送结束指令错误！");
-
+                        return;
                     }
+                }
+                if (!_usbServer.UsbConnect((bool)usbconnect.IsChecked, int.Parse(bytecnt.Text.Trim())))
+                {
+                    _messageServer.AddWindowsMsg("设备断开失败，请重新上电！");
                 }
                 else
                 {
-                    if (!_usbServer.UsbConnect((bool)usbconnect.IsChecked, int.Parse(bytecnt.Text.Trim())))
-                    {
-                        _messageServer.AddWindowsMsg("设备断开失败，请重新上电！");
-                    }
-                    else
-                    {
-                        usbconnect.IsEnabled = false;
-                        usbsavedata.IsEnabled = false;
-                        usbfilepath.IsEnabled = false;
-                        usbsetting.IsEnabled = false;
-                    }
+                    usbconnect.IsEnabled = false;
+                    usbsavedata.IsEnabled = false;
+                    usbfilepath.IsEnabled = false;
+                    usbsetting.IsEnabled = false;
                 }
 
             }
@@ -340,35 +362,54 @@ namespace ZKCQPlotform
             }
             else
             {
+                //if (_netstopcom != string.Empty)
+                //{
+                //    if (_netServer.NetSend(TextToByteArry(_netstopcom), TextToByteArry(_netstopcom).Length))
+                //    {
+                //        if (_netServer.Stop())
+                //        {
+                //            _netServer.Destroy();
+                //        }
+                //        else
+                //        {
+                //            _messageServer.AddWindowsMsg("网络服务停止失败！");
+                //        }
+                //    }
+                //    else
+                //    {
+                //        _messageServer.AddWindowsMsg("发送结束指令错误！");
+                //    }
+                //}
+                //else
+                //{
+                //    if (_netServer.Stop())
+                //    {
+                //        _netServer.Destroy();
+                //    }
+                //    else
+                //    {
+                //        _messageServer.AddWindowsMsg("");
+                //    }
+                //}
                 if (_netstopcom != string.Empty)
                 {
                     if (_netServer.NetSend(TextToByteArry(_netstopcom), TextToByteArry(_netstopcom).Length))
-                    {
-                        if (_netServer.Stop())
-                        {
-                            _netServer.Destroy();
-                        }
-                        else
-                        {
-                            _messageServer.AddWindowsMsg("网络服务停止失败！");
-                        }
-                    }
+                    {; }
                     else
                     {
                         _messageServer.AddWindowsMsg("发送结束指令错误！");
+                        return;
                     }
+                }
+                if (_netServer.Stop())
+                {
+                    _netServer.Destroy();
                 }
                 else
                 {
-                    if (_netServer.Stop())
-                    {
-                        _netServer.Destroy();
-                    }
-                    else
-                    {
-                        _messageServer.AddWindowsMsg("");
-                    }
+                    _messageServer.AddWindowsMsg("网络服务停止失败！");
                 }
+
             }
         }
 
