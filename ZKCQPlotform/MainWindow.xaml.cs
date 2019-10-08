@@ -117,7 +117,11 @@ namespace ZKCQPlotform
 
                     Dispatcher.Invoke(()=>
                     {
-
+                        netconnect.IsEnabled = true;
+                        startListen.IsEnabled = true;
+                        stopListen.IsEnabled = true;
+                        netsavedata.IsEnabled = true;
+                        netchangepath.IsEnabled = true;
                     });
                 }
             }
@@ -141,15 +145,23 @@ namespace ZKCQPlotform
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            //Binding binding1 = new Binding { Source = _uartServer, Path = new PropertyPath("PortNames") };
-            //Binding binding2 = new Binding { Source = _uartServer, Path = new PropertyPath("DataBits") };
-            //Binding binding3 = new Binding { Source = _uartServer, Path = new PropertyPath("Parity") };
-            //System.Windows.Data.Binding binding4 = new Binding { Source = , Path = new PropertyPath("StopBits") };
+            //System.Windows.Data.Binding binding1 = new System.Windows.Data.Binding { Source = _uartServer, Path = new PropertyPath("PortNames") };
+            //System.Windows.Data.Binding binding2 = new System.Windows.Data.Binding { Source = _uartServer, Path = new PropertyPath("DataBits") };
+            //System.Windows.Data.Binding binding3 = new System.Windows.Data.Binding { Source = _uartServer, Path = new PropertyPath("Parity") };
+            //System.Windows.Data.Binding binding4 = new System.Windows.Data.Binding { Source = _uartServer, Path = new PropertyPath("StopBits") };
+
+            //uartport.SetBinding(ItemsControl.ItemsSourceProperty, binding1);
+            //uartdatabit.SetBinding(ItemsControl.ItemsSourceProperty, binding2);
+            //uartenparity.SetBinding(ItemsControl.ItemsSourceProperty, binding3);
+            //uartstopbit.SetBinding(ItemsControl.ItemsSourceProperty, binding4);
 
             usbconnect.IsEnabled = false;
             usbsavedata.IsEnabled = false;
             usbfilepath.IsEnabled = false;
             usbsetting.IsEnabled = false;
+
+            startListen.IsEnabled = false;
+            stopListen.IsEnabled = false;
 
             bytecnt.Text = Properties.Settings.Default.usbbytecnt;
             framecnt.Text = Properties.Settings.Default.usbframecnt;
@@ -176,6 +188,8 @@ namespace ZKCQPlotform
             Properties.Settings.Default.usbstartcom = _usbstartcom;
             Properties.Settings.Default.usbstopcom = _usbstopcom;
 
+            Properties.Settings.Default.netip = iptextbox.Text;
+            Properties.Settings.Default.netport = porttextbox.Text;
             Properties.Settings.Default.netstartcom = _netstartcom;
             Properties.Settings.Default.netstopcom = _netstopcom;
 
@@ -184,7 +198,8 @@ namespace ZKCQPlotform
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-
+            if (_netServer != null)
+                _netServer.Destroy();
         }
 
 
@@ -226,42 +241,6 @@ namespace ZKCQPlotform
             }
             else
             {
-                //if (_usbstopcom != string.Empty)
-                //{           
-                //    if (_usbServer.UsbStopComm(TextToByteArry(_usbstopcom)))
-                //    {
-                //        if (!_usbServer.UsbConnect((bool)usbconnect.IsChecked, int.Parse(bytecnt.Text.Trim())))
-                //        {
-                //            _messageServer.AddWindowsMsg("设备断开失败，请重新上电！");
-                //        }
-                //        else
-                //        {
-                //            usbconnect.IsEnabled = false;
-                //            usbsavedata.IsEnabled = false;
-                //            usbfilepath.IsEnabled = false;
-                //            usbsetting.IsEnabled = false;
-                //        }
-                //    }
-                //    else
-                //    {
-                //        _messageServer.AddWindowsMsg("发送结束指令错误！");
-
-                //    }
-                //}
-                //else
-                //{
-                //    if (!_usbServer.UsbConnect((bool)usbconnect.IsChecked, int.Parse(bytecnt.Text.Trim())))
-                //    {
-                //        _messageServer.AddWindowsMsg("设备断开失败，请重新上电！");
-                //    }
-                //    else
-                //    {
-                //        usbconnect.IsEnabled = false;
-                //        usbsavedata.IsEnabled = false;
-                //        usbfilepath.IsEnabled = false;
-                //        usbsetting.IsEnabled = false;
-                //    }
-                //}
                 if (_usbstopcom != string.Empty)
                 {
                     if (_usbServer.UsbStopComm(TextToByteArry(_usbstopcom)))
@@ -346,13 +325,8 @@ namespace ZKCQPlotform
                 {
                     if (_netServer.Start(iptextbox.Text, Convert.ToUInt16(porttextbox.Text)))
                     {
-                        if (_netstartcom != string.Empty)
-                        {
-                            _netstartcom = netstartcom.Text;
-                            if (_netServer.NetSend(TextToByteArry(_netstartcom), TextToByteArry(_netstartcom).Length))
-                                _messageServer.AddMsg(_messageServer._netBindList, " > Send start commend !");
-                        }
-                        //_messageServer.AddWindowsMsg("网络成功 ！");
+                        _messageServer.AddMsg(_messageServer._netBindList, $" > Start Server success !");
+                        startListen.IsEnabled = true;
                     }
                     else
                     {
@@ -362,54 +336,42 @@ namespace ZKCQPlotform
             }
             else
             {
-                //if (_netstopcom != string.Empty)
-                //{
-                //    if (_netServer.NetSend(TextToByteArry(_netstopcom), TextToByteArry(_netstopcom).Length))
-                //    {
-                //        if (_netServer.Stop())
-                //        {
-                //            _netServer.Destroy();
-                //        }
-                //        else
-                //        {
-                //            _messageServer.AddWindowsMsg("网络服务停止失败！");
-                //        }
-                //    }
-                //    else
-                //    {
-                //        _messageServer.AddWindowsMsg("发送结束指令错误！");
-                //    }
-                //}
-                //else
-                //{
-                //    if (_netServer.Stop())
-                //    {
-                //        _netServer.Destroy();
-                //    }
-                //    else
-                //    {
-                //        _messageServer.AddWindowsMsg("");
-                //    }
-                //}
-                if (_netstopcom != string.Empty)
-                {
-                    if (_netServer.NetSend(TextToByteArry(_netstopcom), TextToByteArry(_netstopcom).Length))
-                    {; }
-                    else
-                    {
-                        _messageServer.AddWindowsMsg("发送结束指令错误！");
-                        return;
-                    }
-                }
                 if (_netServer.Stop())
                 {
-                    _netServer.Destroy();
+                    ;
                 }
                 else
                 {
                     _messageServer.AddWindowsMsg("网络服务停止失败！");
                 }
 
+            }
+        }
+
+        private void StartListen_Click(object sender, RoutedEventArgs e)
+        {
+            if(_netstartcom != string.Empty)
+            {
+                if (_netServer.NetSend(TextToByteArry(_netstartcom), TextToByteArry(_netstartcom).Length))
+                {
+                    _messageServer.AddMsg(_messageServer._netBindList, $" > Send Start commend success !");
+                    startListen.IsEnabled = false;
+                    stopListen.IsEnabled = true;
+                }
+            }
+            
+        }
+
+        private void StopListen_Click(object sender, RoutedEventArgs e)
+        {
+            if (_netstopcom != string.Empty)
+            {
+                if (_netServer.NetSend(TextToByteArry(_netstopcom), TextToByteArry(_netstopcom).Length))
+                {
+                    _messageServer.AddMsg(_messageServer._netBindList, $" > Send Stop commend success !");
+                    startListen.IsEnabled = true;
+                    stopListen.IsEnabled = false;
+                }
             }
         }
 
@@ -431,7 +393,11 @@ namespace ZKCQPlotform
             _netServer._netfilestream = new FileStream(path, FileMode.Create, FileAccess.Write);
             _netServer._netsw = new BinaryWriter(_netServer._netfilestream);
 
-            // button
+            netconnect.IsEnabled = false;
+            startListen.IsEnabled = false;
+            stopListen.IsEnabled = false;
+            netsavedata.IsEnabled = false;
+            netchangepath.IsEnabled = false;
 
             _netServer._netdatastate = PlotformNET.Datastate.start;
         }
@@ -532,5 +498,7 @@ namespace ZKCQPlotform
             _uartServer._uartheardlen = Convert.ToInt32(uartheaderlength.Text);
             _uartServer._uartdatalen = Convert.ToInt32(uartdatalength.Text);
         }
+
+
     }
 }

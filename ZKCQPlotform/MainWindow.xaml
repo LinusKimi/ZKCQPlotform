@@ -130,6 +130,7 @@
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="22*"/>
@@ -154,6 +155,16 @@
                                 </ToggleButton.Style>
                             </ToggleButton>
                             <Grid Grid.Row="3" Grid.ColumnSpan="2">
+                                <Grid Margin="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button x:Name="startListen" Content="开始监听" Margin="5" Grid.Column="0" Click="StartListen_Click"/>
+                                    <Button x:Name="stopListen" Content="停止监听" Margin="5" Grid.Column="1" Click="StopListen_Click"/>
+                                </Grid>
+                            </Grid>
+                            <Grid Grid.Row="4" Grid.ColumnSpan="2">
                                 <Grid Margin="0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="40*"/>

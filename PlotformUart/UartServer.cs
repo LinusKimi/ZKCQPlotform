@@ -36,7 +36,7 @@ namespace PlotformUart
         public BinaryWriter _uartsw = null;
         public Datastate _uartdatastate = Datastate.stop;
 
-        private string[] PortNames
+        public string[] PortNames
         {
             get => _uartportname;
             set
