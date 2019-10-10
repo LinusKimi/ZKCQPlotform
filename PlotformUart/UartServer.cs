@@ -17,7 +17,7 @@ namespace PlotformUart
     public class UartServer : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        private SerialPort _uartserport = new SerialPort();
+        private SerialPort _uartserport;
 
         private MsgServer _msgserver;
         private ActionBlock<byte[]> _actionBlock;
@@ -41,7 +41,7 @@ namespace PlotformUart
             get => _uartportname;
             set
             {
-                _uartportname = null;
+                _uartportname = value;
                 NotifyPropertyChanged();
             }
         }
@@ -54,6 +54,8 @@ namespace PlotformUart
         {
             _msgserver = msgserver;
             _actionBlock = actionBlock;
+
+            _uartserport = new SerialPort();
 
             _uartserport.DataReceived += _serialPort_DataReceived;
 

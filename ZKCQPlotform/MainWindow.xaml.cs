@@ -22,6 +22,7 @@ using PlotformMSG;
 using System.IO;
 using System.Windows.Forms;
 using PlotformUart;
+using System.Windows.Controls.Primitives;
 
 namespace ZKCQPlotform
 {
@@ -129,7 +130,26 @@ namespace ZKCQPlotform
 
         private void UartSaveAction(byte[] data)
         {
+            if (_uartServer._uartdatastate == PlotformUart.Datastate.start)
+            {
+                if (_uartServer._uartfilepath != string.Empty)
+                {
+                    _uartServer._uartsw.Write(data);
+                    _uartServer._uartsw.Flush();
+                }
+                _uartServer._uartframecnt--;
+                if (_uartServer._uartframecnt <= 0)
+                {
+                    _uartServer._uartdatastate = PlotformUart.Datastate.stop;
+                    _uartServer._uartsw.Dispose();
+                    _uartServer._uartfilestream.Dispose();
 
+                    Dispatcher.Invoke(()=>
+                    {
+
+                    });
+                }
+            }
         }
 
         private byte[] TextToByteArry(string hexString)
@@ -145,15 +165,15 @@ namespace ZKCQPlotform
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            //System.Windows.Data.Binding binding1 = new System.Windows.Data.Binding { Source = _uartServer, Path = new PropertyPath("PortNames") };
-            //System.Windows.Data.Binding binding2 = new System.Windows.Data.Binding { Source = _uartServer, Path = new PropertyPath("DataBits") };
-            //System.Windows.Data.Binding binding3 = new System.Windows.Data.Binding { Source = _uartServer, Path = new PropertyPath("Parity") };
-            //System.Windows.Data.Binding binding4 = new System.Windows.Data.Binding { Source = _uartServer, Path = new PropertyPath("StopBits") };
+            System.Windows.Data.Binding binding1 = new System.Windows.Data.Binding { Source = _uartServer, Path = new PropertyPath("PortNames") };
+            System.Windows.Data.Binding binding2 = new System.Windows.Data.Binding { Source = _uartServer, Path = new PropertyPath("DataBits") };
+            System.Windows.Data.Binding binding3 = new System.Windows.Data.Binding { Source = _uartServer, Path = new PropertyPath("Parity") };
+            System.Windows.Data.Binding binding4 = new System.Windows.Data.Binding { Source = _uartServer, Path = new PropertyPath("StopBits") };
 
-            //uartport.SetBinding(ItemsControl.ItemsSourceProperty, binding1);
-            //uartdatabit.SetBinding(ItemsControl.ItemsSourceProperty, binding2);
-            //uartenparity.SetBinding(ItemsControl.ItemsSourceProperty, binding3);
-            //uartstopbit.SetBinding(ItemsControl.ItemsSourceProperty, binding4);
+            uartport.SetBinding(ItemsControl.ItemsSourceProperty, binding1);
+            uartdatabit.SetBinding(Selector.SelectedItemProperty, binding2);
+            uartenparity.SetBinding(Selector.SelectedItemProperty, binding3);
+            uartstopbit.SetBinding(Selector.SelectedItemProperty, binding4);
 
             usbconnect.IsEnabled = false;
             usbsavedata.IsEnabled = false;
@@ -201,7 +221,6 @@ namespace ZKCQPlotform
             if (_netServer != null)
                 _netServer.Destroy();
         }
-
 
         private void Searchdevice_Click(object sender, RoutedEventArgs e)
         {
@@ -470,6 +489,9 @@ namespace ZKCQPlotform
             _uartServer._uartfilestream = new FileStream(path, FileMode.Create, FileAccess.Write);
             _uartServer._uartsw = new BinaryWriter(_uartServer._uartfilestream);
 
+            _uartServer._uartheardflag = TextToByteArry(uartheardflag.Text);
+            _uartServer._uartheardlen = Convert.ToInt32(uartheaderlength.Text);
+            _uartServer._uartdatalen = Convert.ToInt32(uartdatalength.Text);
             _uartServer._uartdatastate = PlotformUart.Datastate.start;
         }
 

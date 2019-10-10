@@ -253,8 +253,8 @@
                             <ComboBox x:Name="uartport" Grid.Row="0" Grid.Column="1" Margin="5" DropDownOpened="Uartport_DropDownOpened"/>
                             <ComboBox x:Name="uartbaudrate" Grid.Row="1" Grid.Column="1" Margin="5" ItemsSource="{Binding Source={StaticResource BaudRate}}" SelectedIndex="0"/>
                             <ComboBox x:Name="uartdatabit" Grid.Row="2" Grid.Column="1" Margin="5" ItemsSource="{Binding Source={StaticResource DataBits}}" SelectedIndex="0"/>
-                            <ComboBox x:Name="uartenparity" Grid.Row="3" Grid.Column="1" Margin="5" ItemsSource="{Binding Source={StaticResource EnParity}}" SelectedIndex="0"/>
-                            <ComboBox x:Name="uartstopbit" Grid.Row="4" Grid.Column="1" Margin="5" ItemsSource="{Binding Source={StaticResource EnStopBit}}" SelectedIndex="1"/>
+                            <ComboBox x:Name="uartenparity" Grid.Row="3" Grid.Column="1" Margin="5" ItemsSource="{Binding Source={StaticResource EnParity}}" SelectedItem="{Binding Port.Parity}"/>
+                            <ComboBox x:Name="uartstopbit" Grid.Row="4" Grid.Column="1" Margin="5" ItemsSource="{Binding Source={StaticResource EnStopBit}}" SelectedItem="{Binding Port.StopBits}"/>
 
                             <ToggleButton x:Name="uartconnect" Grid.Row="5" Grid.ColumnSpan="2" Margin="5" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsChecked="False" Click="Uartconnect_Click">
                                 <ToggleButton.Style>
