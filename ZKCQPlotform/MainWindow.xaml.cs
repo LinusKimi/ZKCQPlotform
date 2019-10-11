@@ -38,13 +38,6 @@ namespace ZKCQPlotform
         private readonly NetServer _netServer;
         private readonly UartServer _uartServer;
 
-        private string _usbstartcom = null;
-        private string _usbstopcom = null;
-        private string _netstartcom = null;
-        private string _netstopcom = null;
-        private string _uartstartcom = null;
-        private string _uartstopcom = null;
-
         private ActionBlock<byte[]> _usbactionblock;
         private ActionBlock<byte[]> _netactionblock;
         private ActionBlock<byte[]> _uartactionblock;
@@ -93,7 +86,6 @@ namespace ZKCQPlotform
                     {
                         usbsavedata.IsEnabled = true;
                         usbfilepath.IsEnabled = true;
-                        usbsetting.IsEnabled = true;
                     });
                 }
 
@@ -146,7 +138,8 @@ namespace ZKCQPlotform
 
                     Dispatcher.Invoke(()=>
                     {
-
+                        uartsavedata.IsEnabled = true;
+                        uartchangepath.IsEnabled = true;
                     });
                 }
             }
@@ -176,9 +169,10 @@ namespace ZKCQPlotform
             uartstopbit.SetBinding(Selector.SelectedItemProperty, binding4);
 
             usbconnect.IsEnabled = false;
+            usbstartrecv.IsEnabled = false;
+            usbstoprecv.IsEnabled = false;
             usbsavedata.IsEnabled = false;
             usbfilepath.IsEnabled = false;
-            usbsetting.IsEnabled = false;
 
             startListen.IsEnabled = false;
             stopListen.IsEnabled = false;
@@ -190,14 +184,16 @@ namespace ZKCQPlotform
 
             iptextbox.Text = Properties.Settings.Default.netip;
             porttextbox.Text = Properties.Settings.Default.netport;
+            netframecnt.Text = Properties.Settings.Default.netframecnt;
             netstartcom.Text = Properties.Settings.Default.netstartcom;
             netstopcom.Text = Properties.Settings.Default.netstopcom;
 
-            _usbstartcom = Properties.Settings.Default.usbstartcom;
-            _usbstopcom = Properties.Settings.Default.usbstopcom;
-
-            _netstartcom = Properties.Settings.Default.netstartcom;
-            _netstopcom = Properties.Settings.Default.netstopcom;
+            uartframecnt.Text = Properties.Settings.Default.uartframecnt;
+            uartheardflag.Text = Properties.Settings.Default.uartheartflag;
+            uartheaderlength.Text = Properties.Settings.Default.uartheartlen;
+            uartdatalength.Text = Properties.Settings.Default.uartdatelen;
+            uartstartcom.Text = Properties.Settings.Default.uartstartcom;
+            uartstopcom.Text = Properties.Settings.Default.uartstopcom;
 
         }
 
@@ -205,13 +201,21 @@ namespace ZKCQPlotform
         {
             Properties.Settings.Default.usbbytecnt = bytecnt.Text;
             Properties.Settings.Default.usbframecnt = framecnt.Text;
-            Properties.Settings.Default.usbstartcom = _usbstartcom;
-            Properties.Settings.Default.usbstopcom = _usbstopcom;
+            Properties.Settings.Default.usbstartcom = uabstartcom.Text;
+            Properties.Settings.Default.usbstopcom = uabstopcom.Text;
 
             Properties.Settings.Default.netip = iptextbox.Text;
             Properties.Settings.Default.netport = porttextbox.Text;
-            Properties.Settings.Default.netstartcom = _netstartcom;
-            Properties.Settings.Default.netstopcom = _netstopcom;
+            Properties.Settings.Default.netframecnt = netframecnt.Text;
+            Properties.Settings.Default.netstartcom = netstartcom.Text;
+            Properties.Settings.Default.netstopcom = netstopcom.Text;
+
+            Properties.Settings.Default.uartframecnt = uartframecnt.Text;
+            Properties.Settings.Default.uartheartflag = uartheardflag.Text;
+            Properties.Settings.Default.uartheartlen = uartheaderlength.Text;
+            Properties.Settings.Default.uartdatelen = uartdatalength.Text;
+            Properties.Settings.Default.uartstartcom = uartstartcom.Text;
+            Properties.Settings.Default.uartstopcom = uartstopcom.Text;
 
             Properties.Settings.Default.Save();
         }
@@ -227,17 +231,15 @@ namespace ZKCQPlotform
 
             if (_usbServer.UsbDeviceFinder())
             {
-                usbconnect.IsEnabled = true;
+                usbconnect.IsEnabled = true;              
                 usbsavedata.IsEnabled = true;
                 usbfilepath.IsEnabled = true;
-                usbsetting.IsEnabled = true;
             }
             else
             {
                 usbconnect.IsEnabled = false;
                 usbsavedata.IsEnabled = false;
                 usbfilepath.IsEnabled = false;
-                usbsetting.IsEnabled = false;
             }
         }
 
@@ -247,29 +249,19 @@ namespace ZKCQPlotform
             {
                 if (_usbServer.UsbConnect((bool)usbconnect.IsChecked, int.Parse(bytecnt.Text.Trim())))
                 {
-                    if (_usbstartcom != string.Empty)
-                    {
-                        if (!_usbServer.UsbStartComm(TextToByteArry(_usbstartcom)))
-                            _messageServer.AddWindowsMsg("发送开始指令错误！");
-                    }
+                    usbstartrecv.IsEnabled = true;
+                    usbstoprecv.IsEnabled = true;
                 }
                 else
                 {
                     usbconnect.IsChecked = false;
+                    usbstartrecv.IsEnabled = false;
+                    usbstoprecv.IsEnabled = false;
                 }
             }
             else
             {
-                if (_usbstopcom != string.Empty)
-                {
-                    if (_usbServer.UsbStopComm(TextToByteArry(_usbstopcom)))
-                    {; }
-                    else
-                    {
-                        _messageServer.AddWindowsMsg("发送结束指令错误！");
-                        return;
-                    }
-                }
+                
                 if (!_usbServer.UsbConnect((bool)usbconnect.IsChecked, int.Parse(bytecnt.Text.Trim())))
                 {
                     _messageServer.AddWindowsMsg("设备断开失败，请重新上电！");
@@ -279,11 +271,42 @@ namespace ZKCQPlotform
                     usbconnect.IsEnabled = false;
                     usbsavedata.IsEnabled = false;
                     usbfilepath.IsEnabled = false;
-                    usbsetting.IsEnabled = false;
                 }
 
             }
 
+        }
+
+        private void Usbstartrecv_Click(object sender, RoutedEventArgs e)
+        {
+            uabstartcom.IsEnabled = false;
+            uabstopcom.IsEnabled = false;
+            if (uabstartcom.Text != string.Empty)
+            {
+                if (!_usbServer.UsbStartComm(TextToByteArry(uabstartcom.Text)))
+                {
+                    uabstartcom.IsEnabled = true;
+                    uabstopcom.IsEnabled = true;
+                    _messageServer.AddWindowsMsg("发送开始指令错误！");
+                }
+            }
+        }
+
+        private void Usbstoprecv_Click(object sender, RoutedEventArgs e)
+        {
+            uabstartcom.IsEnabled = true;
+            uabstopcom.IsEnabled = true;
+
+            if (uabstopcom.Text != string.Empty)
+            {
+                if (_usbServer.UsbStopComm(TextToByteArry(uabstopcom.Text)))
+                {; }
+                else
+                {
+                    _messageServer.AddWindowsMsg("发送结束指令错误！");
+                    return;
+                }
+            }
         }
 
         private void Usbsavedata_Click(object sender, RoutedEventArgs e)
@@ -309,7 +332,6 @@ namespace ZKCQPlotform
 
             usbsavedata.IsEnabled = false;
             usbfilepath.IsEnabled = false;
-            usbsetting.IsEnabled = false;
 
             _usbServer._usbdatastate = PlotformUSB.Datastate.start;
         }
@@ -325,13 +347,6 @@ namespace ZKCQPlotform
             }
 
             _usbServer._usbfilepath = mDialog.SelectedPath.Trim();
-        }
-
-        private void Usbsetting_Click(object sender, RoutedEventArgs e)
-        {
-            _usbstartcom = uabstartcom.Text;
-            _usbstopcom = uabstopcom.Text;
-            _messageServer.AddWindowsMsg("协议参数已保存！");
         }
 
         private void Netconnect_Click(object sender, RoutedEventArgs e)
@@ -369,13 +384,20 @@ namespace ZKCQPlotform
 
         private void StartListen_Click(object sender, RoutedEventArgs e)
         {
-            if(_netstartcom != string.Empty)
+            netstartcom.IsEnabled = false;
+            netstopcom.IsEnabled = false;
+            if (netstartcom.Text != string.Empty)
             {
-                if (_netServer.NetSend(TextToByteArry(_netstartcom), TextToByteArry(_netstartcom).Length))
+                if (_netServer.NetSend(TextToByteArry(netstartcom.Text), TextToByteArry(netstartcom.Text).Length))
                 {
                     _messageServer.AddMsg(_messageServer._netBindList, $" > Send Start commend success !");
                     startListen.IsEnabled = false;
                     stopListen.IsEnabled = true;
+                }
+                else
+                {
+                    netstartcom.IsEnabled = true;
+                    netstopcom.IsEnabled = true;
                 }
             }
             
@@ -383,9 +405,12 @@ namespace ZKCQPlotform
 
         private void StopListen_Click(object sender, RoutedEventArgs e)
         {
-            if (_netstopcom != string.Empty)
+            netstartcom.IsEnabled = true;
+            netstopcom.IsEnabled = true;
+
+            if (netstopcom.Text != string.Empty)
             {
-                if (_netServer.NetSend(TextToByteArry(_netstopcom), TextToByteArry(_netstopcom).Length))
+                if (_netServer.NetSend(TextToByteArry(netstopcom.Text), TextToByteArry(netstopcom.Text).Length))
                 {
                     _messageServer.AddMsg(_messageServer._netBindList, $" > Send Stop commend success !");
                     startListen.IsEnabled = true;
@@ -431,13 +456,6 @@ namespace ZKCQPlotform
             _netServer._netfilepath = mDialog.SelectedPath.Trim();
         }
 
-        private void Netsetting_Click(object sender, RoutedEventArgs e)
-        {
-            _netstartcom = netstartcom.Text;
-            _netstopcom = netstopcom.Text;
-            _messageServer.AddWindowsMsg("协议参数已保存");
-        }
-
         private void Uartport_DropDownOpened(object sender, EventArgs e)
         {
             _uartServer.CheckPort();
@@ -445,6 +463,10 @@ namespace ZKCQPlotform
 
         private void Uartconnect_Click(object sender, RoutedEventArgs e)
         {
+            _uartServer._uartheardflag = TextToByteArry(uartheardflag.Text);
+            _uartServer._uartheardlen = Convert.ToInt32(uartheaderlength.Text);
+            _uartServer._uartdatalen = Convert.ToInt32(uartdatalength.Text);
+
             if ((bool)uartconnect.IsChecked)
             {
                 try
@@ -457,16 +479,10 @@ namespace ZKCQPlotform
                     uartconnect.IsChecked = false;
                     return;
                 }
-                if (_uartstartcom != string.Empty)
-                {
-                    _uartServer.SendData(TextToByteArry(_uartstartcom));
-                }
+
             }
             else
-            {
-                if (_uartstopcom != string.Empty)
-                    _uartServer.SendData(TextToByteArry(_uartstopcom));
-
+            {               
                 _uartServer.ClosePort();
             }
         }
@@ -492,6 +508,10 @@ namespace ZKCQPlotform
             _uartServer._uartheardflag = TextToByteArry(uartheardflag.Text);
             _uartServer._uartheardlen = Convert.ToInt32(uartheaderlength.Text);
             _uartServer._uartdatalen = Convert.ToInt32(uartdatalength.Text);
+
+            uartsavedata.IsEnabled = false;
+            uartchangepath.IsEnabled = false;
+
             _uartServer._uartdatastate = PlotformUart.Datastate.start;
         }
 
@@ -505,22 +525,41 @@ namespace ZKCQPlotform
             _uartServer._uartfilepath = mDialog.SelectedPath.Trim();
         }
 
-        private void Uartsetting_Click(object sender, RoutedEventArgs e)
+        private void Uartstartrecv_Click(object sender, RoutedEventArgs e)
         {
-            Properties.Settings.Default.uartheartflag = uartheardflag.Text;
-            Properties.Settings.Default.uartheartlen = uartheaderlength.Text;
-            Properties.Settings.Default.uartdatelen = uartdatalength.Text;
-            Properties.Settings.Default.uartstartcom = uartstartcom.Text;
-            Properties.Settings.Default.uartstopcom = uartstopcom.Text;
-
-            _uartstopcom = uartstartcom.Text;
-            _uartstopcom = uartstopcom.Text;
-
             _uartServer._uartheardflag = TextToByteArry(uartheardflag.Text);
             _uartServer._uartheardlen = Convert.ToInt32(uartheaderlength.Text);
             _uartServer._uartdatalen = Convert.ToInt32(uartdatalength.Text);
+
+            uartheardflag.IsEnabled = false;
+            uartdatalength.IsEnabled = false;
+            uartheaderlength.IsEnabled = false;
+            uartstartcom.IsEnabled = false;
+            uartstopcom.IsEnabled = false;
+
+            if (uartstartcom.Text != string.Empty)
+            {
+                if (!_uartServer.SendData(TextToByteArry(uartstartcom.Text)))
+                {
+                    uartheardflag.IsEnabled = true;
+                    uartdatalength.IsEnabled = true;
+                    uartheaderlength.IsEnabled = true;
+                    uartstartcom.IsEnabled = true;
+                    uartstopcom.IsEnabled = true;
+                }
+            }
         }
 
+        private void Uartstoprecv_Click(object sender, RoutedEventArgs e)
+        {
+            uartheardflag.IsEnabled = true;
+            uartdatalength.IsEnabled = true;
+            uartheaderlength.IsEnabled = true;
+            uartstartcom.IsEnabled = true;
+            uartstopcom.IsEnabled = true;
 
+            if (uartstopcom.Text != string.Empty)
+                _uartServer.SendData(TextToByteArry(uartstopcom.Text));
+        }
     }
 }

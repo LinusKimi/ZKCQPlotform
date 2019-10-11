@@ -28,7 +28,7 @@
     </Window.Resources>
     <Grid>
         <TabControl x:Name="tabControl" Margin="10">
-            <TabItem Header="USB">
+            <TabItem Header="     USB     ">
                 <Grid Background="White">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="241*"/>
@@ -46,13 +46,14 @@
                                     <RowDefinition Height="*"/>
                                     <RowDefinition Height="*"/>
                                     <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="14*"/>
                                     <ColumnDefinition Width="17*"/>
                                 </Grid.ColumnDefinitions>
-                                <Button x:Name="searchdevice" Grid.Row="0" Grid.ColumnSpan="2" Content="扫描设备" Margin="10" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" Click="Searchdevice_Click"/>
-                                <ToggleButton IsChecked="False" x:Name="usbconnect" Grid.Row="2" Grid.ColumnSpan="2" Margin="10" VerticalContentAlignment="Center" Click="Usbconnect_Click">
+                                <Button x:Name="searchdevice" Grid.Row="0" Grid.ColumnSpan="2" Content="扫描设备" Margin="5" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" Click="Searchdevice_Click"/>
+                                <ToggleButton IsChecked="False" x:Name="usbconnect" Grid.Row="2" Grid.ColumnSpan="2" Margin="5" VerticalContentAlignment="Center" Click="Usbconnect_Click">
                                     <ToggleButton.Style>
                                         <Style TargetType="ToggleButton">
                                             <Style.Triggers>
@@ -66,10 +67,21 @@
                                         </Style>
                                     </ToggleButton.Style>
                                 </ToggleButton>
-                                <Label x:Name="bytenum" Content="每帧字节" Grid.Row="1" Grid.Column="0" Margin="5,12" FontSize="16" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
-                                <TextBox x:Name="bytecnt" Grid.Row="1" Grid.Column="1" Margin="10,16" FontSize="16" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
-                                <Label x:Name="framenum" Content="采集帧数" Grid.Row="3" Grid.Column="0" Margin="5,12" FontSize="16" VerticalAlignment="Center" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
-                                <TextBox x:Name="framecnt" Grid.Row="3" Grid.Column="1" Margin="10,16" FontSize="16" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
+                                <Grid Grid.Row="3" Grid.ColumnSpan="2">
+                                    <Grid Margin="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button x:Name="usbstartrecv" Margin="5" Grid.Column="0" Content="开始指令" Click="Usbstartrecv_Click"/>
+                                        <Button x:Name="usbstoprecv" Margin="5" Grid.Column="2" Content="停止指令" Click="Usbstoprecv_Click"/>
+                                    </Grid>
+                                </Grid>
+                                
+                                <Label x:Name="bytenum" Content="每帧字节" Grid.Row="1" Grid.Column="0" Margin="0" FontSize="16" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
+                                <TextBox x:Name="bytecnt" Grid.Row="1" Grid.Column="1" Margin="5" FontSize="16" VerticalContentAlignment="Center" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
+                                <Label x:Name="framenum" Content="采集帧数" Grid.Row="4" Grid.Column="0" Margin="0" FontSize="16" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
+                                <TextBox x:Name="framecnt" Grid.Row="4" Grid.Column="1" Margin="5" FontSize="16" VerticalContentAlignment="Center" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
                             </Grid>
                         </Grid>
                     </GroupBox>
@@ -79,8 +91,8 @@
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
-                            <Button x:Name="usbsavedata" Grid.Row="0" Content="保存数据" Margin="10" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" Click="Usbsavedata_Click"/>
-                            <Button x:Name="usbfilepath" Grid.Row="1" Content="更改保存路径" Margin="10" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" Click="Usbfilepath_Click"/>
+                            <Button x:Name="usbsavedata" Grid.Row="0" Content="保存数据" Margin="5" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" Click="Usbsavedata_Click"/>
+                            <Button x:Name="usbfilepath" Grid.Row="1" Content="更改保存路径" Margin="5" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" Click="Usbfilepath_Click"/>
                         </Grid>
                     </GroupBox>
                     <GroupBox x:Name="groupBox2" Grid.Column="1" Header="消息通知" Margin="5,0,0,0" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin">
@@ -99,21 +111,20 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
+                                    
                                 </Grid.ColumnDefinitions>
                                 <Label Content="开始采集指令" FontSize="16" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
 
                                 <TextBox x:Name="uabstartcom" Grid.Column="1" Text="eb 90 00 00 01" Margin="5" VerticalContentAlignment="Center"/>
                                 <Label Content="结束采集指令" Grid.Column="2" FontSize="16" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
                                 <TextBox x:Name="uabstopcom" Grid.Column="3" Text="eb 90 00 00 02" Margin="5" VerticalContentAlignment="Center"/>
-
-                                <Button x:Name="usbsetting" Grid.Column="4" Margin="5" Content="保存协议设置" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Click="Usbsetting_Click"/>
+                               
                             </Grid>
                         </Grid>
                     </GroupBox>
                 </Grid>
             </TabItem>
-            <TabItem Header="NET" >
+            <TabItem Header="     NET     " >
                 <Grid Background="White">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="241*"/>
@@ -137,7 +148,7 @@
                                 <ColumnDefinition Width="71*"/>
                             </Grid.ColumnDefinitions>
                             <Label x:Name="iplabel" Content="IP" Margin="5" Grid.Row="0" FontSize="16"  VerticalContentAlignment="Center" HorizontalContentAlignment="Center" d:LayoutOverrides="TopMargin, BottomMargin"/>
-                            <TextBox x:Name="iptextbox" Grid.Row="0" Grid.Column="1" Text="192.168.100.100"  FontSize="16" Margin="5" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
+                            <TextBox x:Name="iptextbox" Grid.Row="0" Grid.Column="1" Text="192.168.100.100"  FontSize="16" Margin="5" VerticalContentAlignment="Center"  d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
                             <Label x:Name="portlabel" Content="Port" Margin="5" Grid.Row="1" FontSize="12" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
                             <TextBox x:Name="porttextbox" Grid.Row="1" Grid.Column="1" Text="8000" FontSize="16" Margin="5" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
                             <ToggleButton x:Name="netconnect" Grid.Row="2" Grid.ColumnSpan="2" Margin="5" VerticalContentAlignment="Center" IsChecked="False" Click="Netconnect_Click" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin">
@@ -160,8 +171,8 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Button x:Name="startListen" Content="开始监听" Margin="5" Grid.Column="0" Click="StartListen_Click"/>
-                                    <Button x:Name="stopListen" Content="停止监听" Margin="5" Grid.Column="1" Click="StopListen_Click"/>
+                                    <Button x:Name="startListen" Content="开始指令" Margin="5" Grid.Column="0" Click="StartListen_Click"/>
+                                    <Button x:Name="stopListen" Content="停止指令" Margin="5" Grid.Column="1" Click="StopListen_Click"/>
                                 </Grid>
                             </Grid>
                             <Grid Grid.Row="4" Grid.ColumnSpan="2">
@@ -171,7 +182,7 @@
                                         <ColumnDefinition Width="53*"/>
                                     </Grid.ColumnDefinitions>
                                     <Label Content="采集帧数" FontSize="16" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
-                                    <TextBox x:Name="netframecnt" Grid.Column="1" Margin="5" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
+                                    <TextBox x:Name="netframecnt" Grid.Column="1" Margin="5" FontSize="16" VerticalContentAlignment="Center"  d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -207,7 +218,7 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
+                                    
                                 </Grid.ColumnDefinitions>
                                 <Label Content="开始采集指令" FontSize="16" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
                                 <TextBox x:Name="netstartcom" Text="eb 90 00 00 01" Grid.Column="1" Margin="5" VerticalContentAlignment="Center"/>
@@ -215,13 +226,12 @@
                                 <Label Content="停止采集指令" FontSize="16" Grid.Column="2" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
                                 <TextBox x:Name="netstopcom" Text="eb 90 00 00 02" Grid.Column="3" Margin="5" VerticalContentAlignment="Center"/>
 
-                                <Button x:Name="netsetting" Content="保存协议设置" Grid.Column="4" Margin="5" Click="Netsetting_Click"/>
                             </Grid>
                         </Grid>
                     </GroupBox>
                 </Grid>
             </TabItem>
-            <TabItem Header="UART" >
+            <TabItem Header="     UART     " >
                 <Grid Background="White">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="241*"/>
@@ -322,7 +332,9 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBox x:Name="uartheardflag" Grid.Column="0" Grid.ColumnSpan="2" Text="eb 90" Margin="5" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" FontSize="16"/>
                             </Grid>
-                            <Button x:Name="uartsetting" Content="保存协议设置" Grid.Row="2" Grid.Column="1" Margin="5" Click="Uartsetting_Click"/>
+
+                            <Button x:Name="uartstartrecv" Content="开始采集" Grid.Row="2" Grid.Column="0" Margin="5" Click="Uartstartrecv_Click"/>
+                            <Button x:Name="uartstoprecv" Content="停止采集" Grid.Row="2" Grid.Column="1" Margin="5" Click="Uartstoprecv_Click"/>
                         </Grid>
                     </GroupBox>
                 </Grid>

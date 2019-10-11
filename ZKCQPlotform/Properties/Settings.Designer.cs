@@ -178,5 +178,29 @@ namespace ZKCQPlotform.Properties {
                 this["uartstopcom"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string netframecnt {
+            get {
+                return ((string)(this["netframecnt"]));
+            }
+            set {
+                this["netframecnt"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string uartframecnt {
+            get {
+                return ((string)(this["uartframecnt"]));
+            }
+            set {
+                this["uartframecnt"] = value;
+            }
+        }
     }
 }

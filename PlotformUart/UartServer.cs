@@ -109,12 +109,19 @@ namespace PlotformUart
 
         public void ClosePort() => _uartserport.Close();
 
-        public void SendData(byte[] data)
+        public bool SendData(byte[] data)
         {
-            if(_uartserport.IsOpen == false)
-                throw new Exception("请打开串口！");
-
-            _uartserport.Write(data, 0, data.Length);
+            if (_uartserport.IsOpen == false)
+            {
+                //throw new Exception("请打开串口！");
+                _msgserver.AddWindowsMsg("请打开串口！");
+                return false;
+            }
+            else
+            {
+                _uartserport.Write(data, 0, data.Length);
+                return true;
+            }
         }
 
         public void NotifyPropertyChanged([CallerMemberName] string propertyName = null)
